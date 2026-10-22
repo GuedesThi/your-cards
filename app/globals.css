@@ -1,26 +1,34 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-color: #0b0d17;
+  --panel-bg: rgba(22, 27, 46, 0.85);
+  --gold-primary: #f39c12;
+  --gold-glow: #f1c40f;
+  --combat-red: #e74c3c;
+  --effect-blue: #2980b9;
+  --text-main: #f8f9fa;
+  --text-muted: #a0aec0;
+  --border-gold: #d4af37;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(243, 156, 18, 0.15) 0%, transparent 70%),
+    radial-gradient(circle at 80% 80%, rgba(41, 128, 185, 0.1) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
 }
