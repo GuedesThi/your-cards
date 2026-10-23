@@ -35,7 +35,14 @@ export function CardCreatorSection({
       return;
     }
     try {
-      await onSaveCard(cardForm);
+      // Se for do tipo 'effect', limpamos os valores de ataque e defesa antes de salvar
+      const payload: Card = {
+        ...cardForm,
+        attack: cardForm.type === "effect" ? 0 : cardForm.attack,
+        defense: cardForm.type === "effect" ? 0 : cardForm.defense,
+      };
+
+      await onSaveCard(payload);
       alert("Carta salva no banco com sucesso!");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -79,44 +86,55 @@ export function CardCreatorSection({
           style={inputStyle}
           value={cardForm.name}
           onChange={(e) => setCardForm({ ...cardForm, name: e.target.value })}
-          placeholder="Ex: Dragão Obscuro"
+          placeholder="Ex: Bola de Fogo Magica"
         />
 
         <label style={labelStyle}>Tipo:</label>
         <select
           style={inputStyle}
           value={cardForm.type}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onChange={(e) => setCardForm({ ...cardForm, type: e.target.value as any })}
+          onChange={(e) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setCardForm({ ...cardForm, type: e.target.value as any })
+          }
         >
           <option value="combat">Combate</option>
           <option value="effect">Efeito</option>
         </select>
 
-        <div style={{ display: "flex", gap: "12px" }}>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Ataque:</label>
-            <input
-              type="number"
-              style={inputStyle}
-              value={cardForm.attack}
-              onChange={(e) =>
-                setCardForm({ ...cardForm, attack: parseInt(e.target.value) || 0 })
-              }
-            />
+        {/* Inputs de Ataque e Defesa: Exibidos APENAS para cartas de COMBATE */}
+        {cardForm.type === "combat" && (
+          <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Ataque:</label>
+              <input
+                type="number"
+                style={inputStyle}
+                value={cardForm.attack}
+                onChange={(e) =>
+                  setCardForm({
+                    ...cardForm,
+                    attack: parseInt(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Defesa:</label>
+              <input
+                type="number"
+                style={inputStyle}
+                value={cardForm.defense}
+                onChange={(e) =>
+                  setCardForm({
+                    ...cardForm,
+                    defense: parseInt(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Defesa:</label>
-            <input
-              type="number"
-              style={inputStyle}
-              value={cardForm.defense}
-              onChange={(e) =>
-                setCardForm({ ...cardForm, defense: parseInt(e.target.value) || 0 })
-              }
-            />
-          </div>
-        </div>
+        )}
 
         <label style={labelStyle}>URL da Imagem:</label>
         <input
@@ -174,7 +192,7 @@ export function CardCreatorSection({
           />
         </div>
 
-        <label style={labelStyle}>Descrição da Habilidade:</label>
+        <label style={labelStyle}>Descrição do Efeito ou Habilidade:</label>
         <textarea
           style={{ ...inputStyle, height: "80px", resize: "vertical" }}
           value={cardForm.description}

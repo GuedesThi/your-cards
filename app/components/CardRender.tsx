@@ -7,7 +7,7 @@ interface CardRenderProps {
 
 export function CardRender({ card, onShowMore }: CardRenderProps) {
   const isCombat = card.type === "combat";
-  const isLong = (card.description || "").length > 85;
+  const isLong = (card.description || "").length > (isCombat ? 85 : 140);
 
   return (
     <div
@@ -24,11 +24,14 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
           ? "linear-gradient(135deg, #2c1212 0%, #1a0808 100%)"
           : "linear-gradient(135deg, #0e1e2d 0%, #060e17 100%)",
         border: `3px solid ${isCombat ? "#e74c3c" : "#2980b9"}`,
-        boxShadow: `0 8px 24px ${isCombat ? "rgba(231, 76, 60, 0.35)" : "rgba(41, 128, 185, 0.35)"}`,
+        boxShadow: `0 8px 24px ${
+          isCombat ? "rgba(231, 76, 60, 0.35)" : "rgba(41, 128, 185, 0.35)"
+        }`,
         color: "#fff",
         userSelect: "none",
       }}
     >
+      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -67,6 +70,7 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
         </span>
       </div>
 
+      {/* Frame de Imagem */}
       <div
         style={{
           width: "100%",
@@ -111,12 +115,13 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
         )}
       </div>
 
+      {/* Descrição - Se for carta de efeito, ocupa o espaço que seria do ATK/DEF */}
       <div
         style={{
           background: "rgba(0, 0, 0, 0.7)",
           padding: "8px 10px",
           borderRadius: "8px",
-          height: "80px",
+          height: isCombat ? "80px" : "118px", // Expande se for efeito
           fontSize: "11px",
           lineHeight: "1.3",
           overflow: "hidden",
@@ -127,7 +132,7 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
         <p
           style={{
             display: "-webkit-box",
-            WebkitLineClamp: 4,
+            WebkitLineClamp: isCombat ? 4 : 6,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
           }}
@@ -156,36 +161,39 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
         )}
       </div>
 
-      <div style={{ display: "flex", gap: "8px" }}>
-        <div
-          style={{
-            flex: 1,
-            background: "linear-gradient(to right, #900c3f, #c70039)",
-            padding: "6px",
-            borderRadius: "6px",
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: "12px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
-          }}
-        >
-          ⚔️ ATK: {card.attack || 0}
+      {/* Renderização Condicional: Só exibe Atributos se for carta de COMBATE */}
+      {isCombat && (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <div
+            style={{
+              flex: 1,
+              background: "linear-gradient(to right, #900c3f, #c70039)",
+              padding: "6px",
+              borderRadius: "6px",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "12px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+            }}
+          >
+            ⚔️ ATK: {card.attack || 0}
+          </div>
+          <div
+            style={{
+              flex: 1,
+              background: "linear-gradient(to right, #1f4068, #162447)",
+              padding: "6px",
+              borderRadius: "6px",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "12px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+            }}
+          >
+            🛡️ DEF: {card.defense || 0}
+          </div>
         </div>
-        <div
-          style={{
-            flex: 1,
-            background: "linear-gradient(to right, #1f4068, #162447)",
-            padding: "6px",
-            borderRadius: "6px",
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: "12px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
-          }}
-        >
-          🛡️ DEF: {card.defense || 0}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
