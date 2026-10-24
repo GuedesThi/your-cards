@@ -203,13 +203,19 @@ export function CardCreatorSection({
                 </div>
               </div>
 
+              {/* 🎯 Barras deslizantes para Ataque e Defesa */}
               <div className="crt-section__row">
                 <div className="crt-section__col">
-                  <label className="crt-section__label">Ataque:</label>
+                  <label className="crt-section__label">
+                    Ataque: ({cardForm.attack || 0})
+                  </label>
                   <input
-                    type="number"
-                    className="crt-section__input"
-                    value={cardForm.attack}
+                    type="range"
+                    min="0"
+                    max="99"
+                    step="1"
+                    className="crt-section__range"
+                    value={cardForm.attack || 0}
                     onChange={(e) =>
                       setCardForm({
                         ...cardForm,
@@ -219,11 +225,16 @@ export function CardCreatorSection({
                   />
                 </div>
                 <div className="crt-section__col">
-                  <label className="crt-section__label">Defesa:</label>
+                  <label className="crt-section__label">
+                    Defesa: ({cardForm.defense || 0})
+                  </label>
                   <input
-                    type="number"
-                    className="crt-section__input"
-                    value={cardForm.defense}
+                    type="range"
+                    min="0"
+                    max="99"
+                    step="1"
+                    className="crt-section__range"
+                    value={cardForm.defense || 0}
                     onChange={(e) =>
                       setCardForm({
                         ...cardForm,

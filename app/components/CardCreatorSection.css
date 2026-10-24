@@ -75,6 +75,7 @@
 .crt-section__range {
   width: 100%;
   accent-color: var(--gold-primary);
+  cursor: pointer;
 }
 
 .crt-section__textarea {
