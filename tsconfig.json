@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    }, "types": ["jest", "node"] /* 👈 Adicione "jest" aqui */
   },
   "include": [
     "next-env.d.ts",
