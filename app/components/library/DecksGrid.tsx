@@ -16,14 +16,21 @@ export function DecksGrid({
 }: DecksGridProps) {
   if (decks.length === 0) {
     return (
-      <p style={{ color: "var(--text-muted)" }}>
+      <p style={{ color: "var(--text-muted)", textAlign: "center" }}>
         Você ainda não criou nenhum deck. Clique em &quot;Criar Novo Deck&quot; acima para começar!
       </p>
     );
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+        gap: "20px",
+        justifyContent: "center",
+      }}
+    >
       {decks.map((deck) => (
         <div
           key={deck.id}
@@ -45,13 +52,13 @@ export function DecksGrid({
                 <img
                   src={deck.imageUrl}
                   alt=""
-                  style={{ width: "24px", height: "24px", borderRadius: "4px", objectFit: "cover" }}
+                  style={{ width: "28px", height: "28px", borderRadius: "6px", objectFit: "cover" }}
                   onError={(e: any) => {
                     e.target.style.display = "none";
                   }}
                 />
               ) : (
-                <span>📦</span>
+                <span style={{ fontSize: "20px" }}>📦</span>
               )}
               <h3 className="font-cinzel" style={{ color: "var(--gold-primary)", fontSize: "18px", margin: 0 }}>
                 {deck.name}
@@ -62,60 +69,63 @@ export function DecksGrid({
               {deck.description || "Sem descrição."}
             </p>
             <p style={{ color: "#fff", fontSize: "12px", fontWeight: "bold" }}>
-              Cartas: {deck.cards?.reduce((acc, curr) => acc + curr.quantity, 0) || 0}
+              Cartas no Deck: {deck.cards?.reduce((acc, curr) => acc + curr.quantity, 0) || 0}
             </p>
           </div>
 
-          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+          {/* 🎯 Layout padronizado para os botões do card de deck */}
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px", flexWrap: "wrap" }}>
             <button
               onClick={() => onSelectDeck(deck)}
               style={{
-                flex: 2,
+                flex: "1 1 120px",
                 background: "rgba(243, 156, 18, 0.2)",
                 border: "1px solid var(--gold-primary)",
                 color: "var(--gold-glow)",
-                padding: "8px",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                fontSize: "12px",
-                cursor: "pointer",
-              }}
-            >
-              👁️ Acessar Deck
-            </button>
-            <button
-              onClick={() => onEditDeck(deck)}
-              title="Editar Deck"
-              style={{
-                flex: 1,
-                background: "rgba(255, 255, 255, 0.1)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                color: "#fff",
-                padding: "8px",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                fontSize: "12px",
-                cursor: "pointer",
-              }}
-            >
-              ✏️
-            </button>
-            <button
-              onClick={() => deck.id && onDeleteDeck(deck.id)}
-              title="Excluir Deck"
-              style={{
-                background: "rgba(231, 76, 60, 0.2)",
-                border: "1px solid var(--combat-red)",
-                color: "#ff8a80",
                 padding: "8px 12px",
                 borderRadius: "6px",
                 fontWeight: "bold",
                 fontSize: "12px",
                 cursor: "pointer",
+                textAlign: "center",
               }}
             >
-              🗑️
+              👁️ Acessar Deck
             </button>
+            <div style={{ display: "flex", gap: "8px", flex: "0 0 auto" }}>
+              <button
+                onClick={() => onEditDeck(deck)}
+                title="Editar Deck"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  color: "#fff",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                }}
+              >
+                ✏️
+              </button>
+              <button
+                onClick={() => deck.id && onDeleteDeck(deck.id)}
+                title="Excluir Deck"
+                style={{
+                  background: "rgba(231, 76, 60, 0.2)",
+                  border: "1px solid var(--combat-red)",
+                  color: "#ff8a80",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                }}
+              >
+                🗑️
+              </button>
+            </div>
           </div>
         </div>
       ))}

@@ -48,16 +48,14 @@ export function CardCreatorSection({
 }: CardCreatorSectionProps) {
   const [cardForm, setCardForm] = useState<Card>(editingCard || initialFormState);
 
-  // 1. Sincroniza APENAS quando a carta selecionada para edição mudar de ID ou de estado (edição vs criação)
   useEffect(() => {
     if (editingCard) {
       setCardForm(editingCard);
     } else {
       setCardForm(initialFormState);
     }
-  }, [editingCard?.id]); // 👈 Escuta especificamente a mudança de ID da carta
+  }, [editingCard?.id]);
 
-  // Estado para controlar o modal customizado de alertas/mensagens
   const [notification, setNotification] = useState<{
     type: "success" | "error" | "info";
     title: string;
@@ -70,14 +68,12 @@ export function CardCreatorSection({
       setNotification({
         type: "info",
         title: "Acesso Necessário",
-        message:
-          "Você precisa estar logado para salvar suas cartas na biblioteca!",
+        message: "Você precisa estar logado para salvar suas cartas na biblioteca!",
         action: onRequireAuth,
       });
       return;
     }
 
-    // Validações de campos obrigatórios
     if (!cardForm.name.trim()) {
       setNotification({
         type: "error",
@@ -91,8 +87,7 @@ export function CardCreatorSection({
       setNotification({
         type: "error",
         title: "Campo Obrigatório",
-        message:
-          "Sua carta precisa de uma descrição para explicar seus efeitos ou habilidades.",
+        message: "Sua carta precisa de uma descrição para explicar seus efeitos ou habilidades.",
       });
       return;
     }
@@ -113,7 +108,6 @@ export function CardCreatorSection({
         defense: cardForm.type === "effect" ? 0 : cardForm.defense,
       };
 
-      // 2. Aguarda a gravação no Supabase e atualização de estado no pai
       await onSaveCard(payload);
 
       setNotification({
@@ -122,7 +116,6 @@ export function CardCreatorSection({
         message: `Sua carta "${cardForm.name}" foi gravada com segurança na sua biblioteca.`,
       });
 
-      // 3. Reseta o formulário apenas se for criação de carta nova (se for edição, a navegação de aba cuidará disso)
       if (!cardForm.id) {
         setCardForm(initialFormState);
       }
@@ -130,9 +123,7 @@ export function CardCreatorSection({
       setNotification({
         type: "error",
         title: "Falha ao Salvar Carta",
-        message:
-          err.message ||
-          "Ocorreu um erro inesperado ao se comunicar com o banco de dados.",
+        message: err.message || "Ocorreu um erro inesperado ao se comunicar com o banco de dados.",
       });
     }
   };
@@ -140,6 +131,7 @@ export function CardCreatorSection({
   return (
     <div>
       <div
+        className="creator-container"
         style={{
           display: "flex",
           gap: "32px",
@@ -149,6 +141,7 @@ export function CardCreatorSection({
       >
         {/* Painel do Formulário */}
         <div
+          className="creator-form"
           style={{
             flex: "1 1 380px",
             background: "var(--panel-bg)",
@@ -166,10 +159,7 @@ export function CardCreatorSection({
               marginBottom: "16px",
             }}
           >
-            <h3
-              className="font-cinzel"
-              style={{ color: "var(--gold-primary)", fontSize: "18px" }}
-            >
+            <h3 className="font-cinzel" style={{ color: "var(--gold-primary)", fontSize: "18px" }}>
               {cardForm.id ? "Editar Carta" : "Personalizar Carta"}
             </h3>
             {cardForm.id && onCancelEdit && (
@@ -206,9 +196,7 @@ export function CardCreatorSection({
           <select
             style={inputStyle}
             value={cardForm.type}
-            onChange={(e) =>
-              setCardForm({ ...cardForm, type: e.target.value as any })
-            }
+            onChange={(e) => setCardForm({ ...cardForm, type: e.target.value as any })}
           >
             <option value="creature">Criatura</option>
             <option value="effect">Efeito</option>
@@ -329,9 +317,7 @@ export function CardCreatorSection({
             style={inputStyle}
             placeholder="https://exemplo.com/imagem.png"
             value={cardForm.imageUrl}
-            onChange={(e) =>
-              setCardForm({ ...cardForm, imageUrl: e.target.value })
-            }
+            onChange={(e) => setCardForm({ ...cardForm, imageUrl: e.target.value })}
           />
 
           <div
@@ -356,9 +342,7 @@ export function CardCreatorSection({
               style={{ width: "100%", accentColor: "var(--gold-primary)" }}
             />
 
-            <label style={labelStyle}>
-              Posição Horizontal (X): ({cardForm.posX}px)
-            </label>
+            <label style={labelStyle}>Posição Horizontal (X): ({cardForm.posX}px)</label>
             <input
               type="range"
               min="-200"
@@ -370,9 +354,7 @@ export function CardCreatorSection({
               style={{ width: "100%", accentColor: "var(--gold-primary)" }}
             />
 
-            <label style={labelStyle}>
-              Posição Vertical (Y): ({cardForm.posY}px)
-            </label>
+            <label style={labelStyle}>Posição Vertical (Y): ({cardForm.posY}px)</label>
             <input
               type="range"
               min="-200"
@@ -389,9 +371,7 @@ export function CardCreatorSection({
           <textarea
             style={{ ...inputStyle, height: "80px", resize: "vertical" }}
             value={cardForm.description}
-            onChange={(e) =>
-              setCardForm({ ...cardForm, description: e.target.value })
-            }
+            onChange={(e) => setCardForm({ ...cardForm, description: e.target.value })}
             placeholder="Escreva os efeitos ou a história da sua carta..."
           />
 
@@ -401,27 +381,16 @@ export function CardCreatorSection({
         </div>
 
         {/* Pré-visualização em Tempo Real */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <h3
-            className="font-cinzel"
-            style={{ color: "var(--text-muted)", marginBottom: "16px" }}
-          >
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <h3 className="font-cinzel" style={{ color: "var(--text-muted)", marginBottom: "16px" }}>
             Pré-visualização em Tempo Real
           </h3>
           <CardRender card={cardForm} onShowMore={onShowModal} />
         </div>
       </div>
 
-      {/* Glossário didático no final da seção */}
       <GameGlossary />
 
-      {/* Modal Customizado para Avisos e Notificações */}
       {notification && (
         <NotificationModal
           type={notification.type}

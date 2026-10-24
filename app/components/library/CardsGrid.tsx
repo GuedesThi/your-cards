@@ -19,14 +19,22 @@ export function CardsGrid({
 }: CardsGridProps) {
   if (cards.length === 0) {
     return (
-      <p style={{ color: "var(--text-muted)" }}>
+      <p style={{ color: "var(--text-muted)", textAlign: "center" }}>
         Nenhuma carta encontrada na sua conta. Acesse o menu &quot;Criar Carta&quot; para começar!
       </p>
     );
   }
 
   return (
-    <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "20px",
+        flexWrap: "wrap",
+        justifyContent: "center", // 🎯 Garante centralização perfeita em telemóveis
+        width: "100%",
+      }}
+    >
       {cards.map((card) => (
         <div key={card.id} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <CardRender card={card} onShowMore={onShowModal} />
@@ -39,7 +47,7 @@ export function CardsGrid({
                   background: "rgba(243, 156, 18, 0.15)",
                   border: "1px solid var(--gold-primary)",
                   color: "var(--gold-glow)",
-                  padding: "6px",
+                  padding: "8px",
                   borderRadius: "6px",
                   fontSize: "12px",
                   cursor: "pointer",
@@ -55,7 +63,7 @@ export function CardsGrid({
                   background: "rgba(231, 76, 60, 0.15)",
                   border: "1px solid var(--combat-red)",
                   color: "#ff8a80",
-                  padding: "6px",
+                  padding: "8px",
                   borderRadius: "6px",
                   fontSize: "12px",
                   cursor: "pointer",

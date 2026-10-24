@@ -36,7 +36,7 @@ export function Header({ activeTab, setActiveTab, user, onLogout }: HeaderProps)
       >
         🃏 YOUR CARDS
       </h1>
-      <nav style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+      <nav style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
         <button style={navBtnStyle(activeTab === "landing")} onClick={() => setActiveTab("landing")}>
           Início
         </button>
@@ -47,8 +47,20 @@ export function Header({ activeTab, setActiveTab, user, onLogout }: HeaderProps)
           Biblioteca
         </button>
         {user ? (
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <span style={{ fontSize: "12px", color: "var(--gold-glow)" }}>👤 {user.email}</span>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+            <span
+              style={{
+                fontSize: "12px",
+                color: "var(--gold-glow)",
+                maxWidth: "140px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={user.email}
+            >
+              👤 {user.email}
+            </span>
             <button
               style={{ ...navBtnStyle(false), background: "#c70039", borderColor: "#c70039" }}
               onClick={onLogout}
@@ -70,10 +82,10 @@ const navBtnStyle = (active: boolean) => ({
   background: active ? "var(--gold-primary)" : "transparent",
   color: active ? "#000" : "var(--text-main)",
   border: "1px solid var(--border-gold)",
-  padding: "6px 14px",
+  padding: "6px 12px",
   borderRadius: "6px",
   cursor: "pointer",
   fontWeight: "bold" as const,
-  fontSize: "13px",
+  fontSize: "12px",
   transition: "all 0.2s ease",
 });

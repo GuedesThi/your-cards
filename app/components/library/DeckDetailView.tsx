@@ -30,7 +30,17 @@ export function DeckDetailView({
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+      {/* 🎯 Botões de topo com suporte a quebra de linha em telemóveis */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+          flexWrap: "wrap",
+          gap: "12px",
+        }}
+      >
         <button onClick={onBack} style={goldOutlineBtnStyle}>
           ← Voltar para Lista de Decks
         </button>
@@ -56,8 +66,10 @@ export function DeckDetailView({
         {deck.description || "Sem descrição."}
       </p>
 
-      <h4 style={{ color: "#fff", marginBottom: "12px" }}>Cartas no Deck ({deck.cards?.length || 0})</h4>
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", marginBottom: "32px" }}>
+      <h4 style={{ color: "#fff", marginBottom: "16px" }}>Cartas no Deck ({deck.cards?.length || 0})</h4>
+      
+      {/* 🎯 Cartas do deck perfeitamente centralizadas */}
+      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center", marginBottom: "32px" }}>
         {(deck.cards || []).map(({ card, quantity }) => (
           <div key={card.id} style={{ display: "flex", flexDirection: "column", gap: "8px", position: "relative" }}>
             <CardRender card={card} onShowMore={onShowModal} />
@@ -79,15 +91,18 @@ export function DeckDetailView({
         ))}
       </div>
 
+      {/* Seção Inferior: Sugestões de Adição */}
       <div style={{ marginTop: "48px", paddingTop: "24px", borderTop: "1px dashed rgba(212, 175, 55, 0.3)" }}>
-        <h4 style={{ color: "var(--gold-primary)", marginBottom: "16px" }}>Adicionar Cartas da Coleção ao Deck</h4>
+        <h4 style={{ color: "var(--gold-primary)", marginBottom: "16px", textAlign: "center" }}>
+          Adicionar Cartas da Coleção ao Deck
+        </h4>
 
         {availableCardsToAdd.length === 0 ? (
-          <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px", textAlign: "center" }}>
             Todas as cartas da sua coleção já foram adicionadas a este deck!
           </p>
         ) : (
-          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center" }}>
             {availableCardsToAdd.map((card) => (
               <div key={card.id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 <CardRender card={card} onShowMore={onShowModal} />
@@ -132,21 +147,24 @@ const goldOutlineBtnStyle = {
   background: "transparent",
   color: "var(--gold-primary)",
   border: "1px solid var(--gold-primary)",
-  padding: "6px 12px",
+  padding: "8px 14px",
   borderRadius: "6px",
   cursor: "pointer",
   fontWeight: "bold",
+  fontSize: "12px",
 };
 
 const goldSecondaryBtnStyle = {
+  flex: 1,
   background: "rgba(243, 156, 18, 0.2)",
   border: "1px solid var(--gold-primary)",
   color: "var(--gold-glow)",
-  padding: "6px 12px",
+  padding: "8px 12px",
   borderRadius: "6px",
   fontWeight: "bold",
   fontSize: "12px",
   cursor: "pointer",
+  textAlign: "center" as const,
 };
 
 const redOutlineBtnStyle = {
@@ -154,11 +172,12 @@ const redOutlineBtnStyle = {
   background: "rgba(231, 76, 60, 0.2)",
   border: "1px solid #e74c3c",
   color: "#ff8a80",
-  padding: "6px",
+  padding: "8px 12px",
   borderRadius: "6px",
   fontSize: "12px",
   cursor: "pointer",
   fontWeight: "bold",
+  textAlign: "center" as const,
 };
 
 const primaryBtnStyle = {
@@ -166,7 +185,7 @@ const primaryBtnStyle = {
   background: "linear-gradient(135deg, var(--gold-primary), #d4af37)",
   color: "#000",
   border: "none",
-  padding: "8px",
+  padding: "8px 12px",
   borderRadius: "6px",
   fontWeight: "bold",
   fontSize: "12px",
