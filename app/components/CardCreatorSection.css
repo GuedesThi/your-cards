@@ -1,0 +1,114 @@
+/* Escopo isolado: CardCreatorSection */
+.crt-section {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.crt-section__panel {
+  flex: 1 1 380px;
+  background: var(--panel-bg);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.crt-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.crt-section__title {
+  color: var(--gold-primary);
+  font-size: 18px;
+}
+
+.crt-section__cancel-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.crt-section__label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.crt-section__input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 14px;
+}
+
+.crt-section__row {
+  display: flex;
+  gap: 12px;
+}
+
+.crt-section__col {
+  flex: 1;
+}
+
+.crt-section__controls {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 14px;
+  border-radius: 8px;
+  margin: 14px 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.crt-section__range {
+  width: 100%;
+  accent-color: var(--gold-primary);
+}
+
+.crt-section__textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.crt-section__save-btn {
+  background: linear-gradient(135deg, var(--gold-primary), #d4af37);
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.crt-section__preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .crt-section {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .crt-section__panel {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+}

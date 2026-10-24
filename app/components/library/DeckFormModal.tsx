@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Deck } from "../../types";
+import "./DeckFormModal.css";
 
 interface DeckFormModalProps {
   editingDeck: Deck | null;
@@ -29,28 +30,8 @@ export function DeckFormModal({ editingDeck, onClose, onSubmit }: DeckFormModalP
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.85)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-        backdropFilter: "blur(4px)",
-      }}
-    >
-      <div
-        style={{
-          background: "var(--panel-bg)",
-          border: "1px solid var(--gold-primary)",
-          padding: "24px",
-          borderRadius: "12px",
-          maxWidth: "420px",
-          width: "90%",
-        }}
-      >
+    <div className="df-modal-overlay">
+      <div className="df-modal-content">
         <h3 className="font-cinzel" style={{ color: "var(--gold-primary)", marginBottom: "16px" }}>
           {editingDeck ? "Editar Deck" : "Criar Novo Deck"}
         </h3>
@@ -63,7 +44,7 @@ export function DeckFormModal({ editingDeck, onClose, onSubmit }: DeckFormModalP
           value={deckName}
           onChange={(e) => setDeckName(e.target.value)}
           placeholder="Ex: Real Madrid (2026)"
-          style={inputStyle}
+          className="df-modal-input"
         />
 
         <label style={{ display: "block", fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>
@@ -74,7 +55,7 @@ export function DeckFormModal({ editingDeck, onClose, onSubmit }: DeckFormModalP
           value={deckImageUrl}
           onChange={(e) => setDeckImageUrl(e.target.value)}
           placeholder="https://exemplo.com/escudo.png"
-          style={inputStyle}
+          className="df-modal-input"
         />
 
         <label style={{ display: "block", fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>
@@ -84,14 +65,37 @@ export function DeckFormModal({ editingDeck, onClose, onSubmit }: DeckFormModalP
           value={deckDesc}
           onChange={(e) => setDeckDesc(e.target.value)}
           placeholder="Escreva sobre a estratégia ou tema do deck..."
-          style={{ ...inputStyle, height: "60px" }}
+          className="df-modal-input df-modal-textarea"
         />
 
         <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-          <button onClick={onClose} style={secondaryBtnStyle}>
+          <button
+            onClick={onClose}
+            style={{
+              flex: 1,
+              background: "transparent",
+              color: "#fff",
+              border: "1px solid rgba(255,255,255,0.2)",
+              padding: "8px",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
             Cancelar
           </button>
-          <button onClick={handleSubmit} style={primaryBtnStyle}>
+          <button
+            onClick={handleSubmit}
+            style={{
+              flex: 1,
+              background: "var(--gold-primary)",
+              color: "#000",
+              border: "none",
+              padding: "8px",
+              borderRadius: "6px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
             {editingDeck ? "Atualizar Deck" : "Salvar Deck"}
           </button>
         </div>
@@ -99,34 +103,3 @@ export function DeckFormModal({ editingDeck, onClose, onSubmit }: DeckFormModalP
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: "6px",
-  border: "1px solid rgba(255,255,255,0.2)",
-  background: "rgba(0,0,0,0.5)",
-  color: "#fff",
-  marginBottom: "12px",
-};
-
-const primaryBtnStyle = {
-  flex: 1,
-  background: "var(--gold-primary)",
-  color: "#000",
-  border: "none",
-  padding: "8px",
-  borderRadius: "6px",
-  fontWeight: "bold",
-  cursor: "pointer",
-};
-
-const secondaryBtnStyle = {
-  flex: 1,
-  background: "transparent",
-  color: "#fff",
-  border: "1px solid rgba(255,255,255,0.2)",
-  padding: "8px",
-  borderRadius: "6px",
-  cursor: "pointer",
-};

@@ -1,0 +1,47 @@
+/* Escopo isolado: DescriptionModal */
+.dsc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.dsc-modal-content {
+  background: var(--bg-color);
+  border: 1px solid var(--border-gold);
+  padding: 28px;
+  border-radius: 12px;
+  max-width: 440px;
+  width: 90%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+}
+
+.dsc-modal__title {
+  color: var(--gold-primary);
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+
+.dsc-modal__text {
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  white-space: pre-wrap;
+}
+
+.dsc-modal__btn {
+  background: linear-gradient(135deg, var(--gold-primary), #d4af37);
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+}

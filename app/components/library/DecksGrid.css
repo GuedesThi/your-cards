@@ -1,0 +1,92 @@
+/* Escopo isolado: DecksGrid */
+.dg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+.dg-card {
+  background: var(--panel-bg);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.dg-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.dg-card__img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.dg-card__title {
+  color: var(--gold-primary);
+  font-size: 18px;
+  margin: 0;
+}
+
+.dg-card__desc {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.dg-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.dg-card__btn-access {
+  flex: 1 1 120px;
+  background: rgba(243, 156, 18, 0.2);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-glow);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.dg-card__icons {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.dg-card__btn-edit {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.dg-card__btn-delete {
+  background: rgba(231, 76, 60, 0.2);
+  border: 1px solid var(--combat-red);
+  color: #ff8a80;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+}

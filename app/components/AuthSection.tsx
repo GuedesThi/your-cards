@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AuthMode } from "../types";
 import { authService } from "../services/authService";
+import "./AuthSection.css";
 
 interface AuthSectionProps {
   onSuccessLogin: () => void;
@@ -64,140 +65,61 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "420px",
-        margin: "40px auto",
-        background: "var(--panel-bg)",
-        padding: "32px",
-        borderRadius: "12px",
-        border: "1px solid var(--border-gold)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-      }}
-    >
+    <div className="ath-card">
       {authMessage === "SUCCESS_REGISTER" ? (
-        <div style={{ textAlign: "center", padding: "12px 0" }}>
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>📩</div>
-          <h2
-            className="font-cinzel"
-            style={{
-              color: "var(--gold-primary)",
-              fontSize: "22px",
-              marginBottom: "12px",
-            }}
-          >
-            Confirme seu E-mail
-          </h2>
-          <p
-            style={{
-              color: "#fff",
-              fontSize: "14px",
-              lineHeight: "1.6",
-              marginBottom: "16px",
-            }}
-          >
+        <div className="ath-card__center">
+          <div className="ath-card__icon">📩</div>
+          <h2 className="font-cinzel ath-card__title">Confirme seu E-mail</h2>
+          <p className="ath-card__text">
             Enviamos um e-mail de confirmação para:
             <br />
             <strong style={{ color: "var(--gold-glow)" }}>{email}</strong>
           </p>
-          <div
-            style={{
-              background: "rgba(243, 156, 18, 0.1)",
-              border: "1px dashed var(--gold-primary)",
-              padding: "12px",
-              borderRadius: "8px",
-              fontSize: "12px",
-              color: "var(--text-muted)",
-              marginBottom: "24px",
-              textAlign: "left",
-            }}
-          >
-            💡 <strong>Dica:</strong> Clique no link do e-mail para ativar sua
-            conta. Se não encontrar na caixa de entrada, verifique a pasta de{" "}
-            <strong>Spam / Lixo Eletrônico</strong>.
+          <div className="ath-card__tip">
+            💡 <strong>Dica:</strong> Clique no link do e-mail para ativar sua conta. Se não encontrar na caixa de entrada, verifique a pasta de <strong>Spam / Lixo Eletrônico</strong>.
           </div>
           <button
             onClick={() => {
               setAuthMode("login");
               setAuthMessage("");
             }}
-            style={primaryBtnStyle}
+            className="ath-card__submit-btn"
           >
             Ir para o Login
           </button>
         </div>
       ) : authMessage === "SUCCESS_FORGOT" ? (
-        <div style={{ textAlign: "center", padding: "12px 0" }}>
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔑</div>
-          <h2
-            className="font-cinzel"
-            style={{
-              color: "var(--gold-primary)",
-              fontSize: "22px",
-              marginBottom: "12px",
-            }}
-          >
-            Instruções Enviadas
-          </h2>
-          <p
-            style={{
-              color: "#fff",
-              fontSize: "14px",
-              lineHeight: "1.6",
-              marginBottom: "16px",
-            }}
-          >
-            Se houver uma conta cadastrada para{" "}
-            <strong style={{ color: "var(--gold-glow)" }}>{email}</strong>,
-            enviamos as instruções para redefinição de senha.
+        <div className="ath-card__center">
+          <div className="ath-card__icon">🔑</div>
+          <h2 className="font-cinzel ath-card__title">Instruções Enviadas</h2>
+          <p className="ath-card__text">
+            Se houver uma conta cadastrada para <strong style={{ color: "var(--gold-glow)" }}>{email}</strong>, enviamos as instruções para redefinição de senha.
           </p>
           <button
             onClick={() => {
               setAuthMode("login");
               setAuthMessage("");
             }}
-            style={primaryBtnStyle}
+            className="ath-card__submit-btn"
           >
             Voltar para o Login
           </button>
         </div>
       ) : (
         <>
-          <h2
-            className="font-cinzel"
-            style={{
-              color: "var(--gold-primary)",
-              marginBottom: "16px",
-              textAlign: "center",
-              fontSize: "22px",
-            }}
-          >
+          <h2 className="font-cinzel ath-card__title">
             {authMode === "login"
               ? "Entrar na Conta"
               : authMode === "register"
               ? "Criar Nova Conta"
               : "Recuperar Senha"}
           </h2>
-          {authMessage && (
-            <p
-              style={{
-                color: "var(--gold-glow)",
-                fontSize: "13px",
-                marginBottom: "16px",
-                textAlign: "center",
-                background: "rgba(0,0,0,0.3)",
-                padding: "8px",
-                borderRadius: "6px",
-              }}
-            >
-              {authMessage}
-            </p>
-          )}
+          {authMessage && <p className="ath-card__msg">{authMessage}</p>}
           <form onSubmit={handleAuth}>
-            <label style={labelStyle}>Email:</label>
+            <label className="ath-card__label">Email:</label>
             <input
               type="email"
-              style={inputStyle}
+              className="ath-card__input"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -206,28 +128,13 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
 
             {authMode !== "forgot" && (
               <>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: "10px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  <label
-                    style={{ ...labelStyle, marginTop: 0, marginBottom: 0 }}
-                  >
+                <div className="ath-card__pass-header">
+                  <label className="ath-card__label" style={{ marginTop: 0, marginBottom: 0 }}>
                     Senha:
                   </label>
                   {authMode === "login" && (
                     <span
-                      style={{
-                        fontSize: "11px",
-                        color: "var(--gold-glow)",
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
+                      className="ath-card__forgot"
                       onClick={() => {
                         setAuthMode("forgot");
                         setAuthMessage("");
@@ -238,10 +145,10 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
                   )}
                 </div>
 
-                <div style={{ position: "relative", width: "100%" }}>
+                <div className="ath-card__pass-wrapper">
                   <input
                     type={showPassword ? "text" : "password"}
-                    style={{ ...inputStyle, paddingRight: "40px" }}
+                    className="ath-card__input ath-card__input--has-button"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -250,21 +157,7 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "var(--text-muted)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      padding: "4px",
-                    }}
+                    className="ath-card__toggle-btn"
                     title={showPassword ? "Ocultar senha" : "Exibir senha"}
                   >
                     {showPassword ? "👁️" : "🙈"}
@@ -273,10 +166,7 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
               </>
             )}
 
-            <button
-              type="submit"
-              style={{ ...primaryBtnStyle, marginTop: "20px" }}
-            >
+            <button type="submit" className="ath-card__submit-btn">
               {authMode === "login"
                 ? "Acessar Conta"
                 : authMode === "register"
@@ -285,15 +175,10 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
             </button>
           </form>
 
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div className="ath-card__footer">
             {authMode === "forgot" ? (
               <p
-                style={{
-                  fontSize: "13px",
-                  color: "var(--text-muted)",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
+                className="ath-card__link"
                 onClick={() => {
                   setAuthMode("login");
                   setAuthMessage("");
@@ -303,12 +188,7 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
               </p>
             ) : (
               <p
-                style={{
-                  fontSize: "13px",
-                  color: "var(--text-muted)",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
+                className="ath-card__link"
                 onClick={() => {
                   setAuthMode(authMode === "login" ? "register" : "login");
                   setAuthMessage("");
@@ -325,33 +205,3 @@ export function AuthSection({ onSuccessLogin }: AuthSectionProps) {
     </div>
   );
 }
-
-const labelStyle = {
-  display: "block",
-  fontSize: "12px",
-  color: "var(--text-muted)",
-  marginTop: "10px",
-  marginBottom: "4px",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: "6px",
-  border: "1px solid rgba(255,255,255,0.2)",
-  background: "rgba(0,0,0,0.5)",
-  color: "#fff",
-  fontSize: "14px",
-};
-
-const primaryBtnStyle = {
-  background: "linear-gradient(135deg, var(--gold-primary), #d4af37)",
-  color: "#000",
-  border: "none",
-  padding: "12px 24px",
-  borderRadius: "8px",
-  fontWeight: "bold" as const,
-  fontSize: "15px",
-  cursor: "pointer",
-  width: "100%",
-};

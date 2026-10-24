@@ -1,0 +1,20 @@
+/* Escopo isolado: Página Home */
+.pg-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-main {
+  flex: 1;
+  padding: 32px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .pg-main {
+    padding: 16px 12px;
+  }
+}

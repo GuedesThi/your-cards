@@ -1,0 +1,43 @@
+/* Escopo isolado: CardsGrid */
+.cg-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.cg-grid__item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cg-grid__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cg-grid__btn-edit {
+  flex: 1;
+  background: rgba(243, 156, 18, 0.15);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-glow);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cg-grid__btn-delete {
+  flex: 1;
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid var(--combat-red);
+  color: #ff8a80;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}

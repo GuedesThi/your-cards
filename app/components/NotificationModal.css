@@ -1,0 +1,83 @@
+/* Escopo isolado: NotificationModal */
+.ntf-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.ntf-modal-content {
+  background: var(--panel-bg);
+  padding: 28px;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+}
+
+.ntf-modal-content--success {
+  border: 1px solid var(--gold-primary);
+  box-shadow: 0 12px 40px rgba(243, 156, 18, 0.3);
+}
+
+.ntf-modal-content--error {
+  border: 1px solid #e74c3c;
+  box-shadow: 0 12px 40px rgba(231, 76, 60, 0.4);
+}
+
+.ntf-modal-content--info {
+  border: 1px solid #2980b9;
+  box-shadow: 0 12px 40px rgba(243, 156, 18, 0.3);
+}
+
+.ntf-modal__icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.ntf-modal__title {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.ntf-modal__title--success { color: var(--gold-primary); }
+.ntf-modal__title--error { color: #e74c3c; }
+.ntf-modal__title--info { color: #2980b9; }
+
+.ntf-modal__message {
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  white-space: pre-wrap;
+}
+
+.ntf-modal__btn {
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.ntf-modal__btn--success {
+  background: linear-gradient(135deg, var(--gold-primary), #d4af37);
+  color: #000;
+}
+
+.ntf-modal__btn--error {
+  background: linear-gradient(135deg, #c70039, #900c3f);
+  color: #fff;
+}
+
+.ntf-modal__btn--info {
+  background: linear-gradient(135deg, var(--gold-primary), #d4af37);
+  color: #000;
+}

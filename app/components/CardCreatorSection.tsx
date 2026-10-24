@@ -2,16 +2,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CreatureSubtype,
-  CreatureBehavior,
-  EffectTiming,
-  EffectDuration,
-} from "../types";
+import { Card, CreatureSubtype, CreatureBehavior, EffectTiming, EffectDuration } from "../types";
 import { CardRender } from "./CardRender";
 import { NotificationModal } from "./NotificationModal";
 import { GameGlossary } from "./GameGlossary";
+import "./CardCreatorSection.css";
 
 interface CardCreatorSectionProps {
   user: any;
@@ -130,36 +125,10 @@ export function CardCreatorSection({
 
   return (
     <div>
-      <div
-        className="creator-container"
-        style={{
-          display: "flex",
-          gap: "32px",
-          flexWrap: "wrap",
-          justifyContent: "center",
-        }}
-      >
-        {/* Painel do Formulário */}
-        <div
-          className="creator-form"
-          style={{
-            flex: "1 1 380px",
-            background: "var(--panel-bg)",
-            padding: "24px",
-            borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <h3 className="font-cinzel" style={{ color: "var(--gold-primary)", fontSize: "18px" }}>
+      <div className="crt-section">
+        <div className="crt-section__panel">
+          <div className="crt-section__header">
+            <h3 className="font-cinzel crt-section__title">
               {cardForm.id ? "Editar Carta" : "Personalizar Carta"}
             </h3>
             {cardForm.id && onCancelEdit && (
@@ -168,33 +137,25 @@ export function CardCreatorSection({
                   setCardForm(initialFormState);
                   onCancelEdit();
                 }}
-                style={{
-                  background: "transparent",
-                  color: "var(--text-muted)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  borderRadius: "4px",
-                  padding: "4px 8px",
-                  fontSize: "11px",
-                  cursor: "pointer",
-                }}
+                className="crt-section__cancel-btn"
               >
                 Cancelar Edição
               </button>
             )}
           </div>
 
-          <label style={labelStyle}>Nome da Carta: *</label>
+          <label className="crt-section__label">Nome da Carta: *</label>
           <input
             type="text"
-            style={inputStyle}
+            className="crt-section__input"
             value={cardForm.name}
             onChange={(e) => setCardForm({ ...cardForm, name: e.target.value })}
             placeholder="Ex: Guardião de Ouro"
           />
 
-          <label style={labelStyle}>Tipo:</label>
+          <label className="crt-section__label">Tipo:</label>
           <select
-            style={inputStyle}
+            className="crt-section__input"
             value={cardForm.type}
             onChange={(e) => setCardForm({ ...cardForm, type: e.target.value as any })}
           >
@@ -204,11 +165,11 @@ export function CardCreatorSection({
 
           {cardForm.type === "creature" ? (
             <>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Categoria:</label>
+              <div className="crt-section__row">
+                <div className="crt-section__col">
+                  <label className="crt-section__label">Categoria:</label>
                   <select
-                    style={inputStyle}
+                    className="crt-section__input"
                     value={cardForm.creatureSubtype || "normal"}
                     onChange={(e) =>
                       setCardForm({
@@ -222,10 +183,10 @@ export function CardCreatorSection({
                     <option value="summon">Invocação</option>
                   </select>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Comportamento:</label>
+                <div className="crt-section__col">
+                  <label className="crt-section__label">Comportamento:</label>
                   <select
-                    style={inputStyle}
+                    className="crt-section__input"
                     value={cardForm.creatureBehavior || "defense"}
                     onChange={(e) =>
                       setCardForm({
@@ -242,12 +203,12 @@ export function CardCreatorSection({
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "12px" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Ataque:</label>
+              <div className="crt-section__row">
+                <div className="crt-section__col">
+                  <label className="crt-section__label">Ataque:</label>
                   <input
                     type="number"
-                    style={inputStyle}
+                    className="crt-section__input"
                     value={cardForm.attack}
                     onChange={(e) =>
                       setCardForm({
@@ -257,11 +218,11 @@ export function CardCreatorSection({
                     }
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>Defesa:</label>
+                <div className="crt-section__col">
+                  <label className="crt-section__label">Defesa:</label>
                   <input
                     type="number"
-                    style={inputStyle}
+                    className="crt-section__input"
                     value={cardForm.defense}
                     onChange={(e) =>
                       setCardForm({
@@ -274,11 +235,11 @@ export function CardCreatorSection({
               </div>
             </>
           ) : (
-            <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ flex: 1 }}>
-                <label style={labelStyle}>Momento de Uso:</label>
+            <div className="crt-section__row">
+              <div className="crt-section__col">
+                <label className="crt-section__label">Momento de Uso:</label>
                 <select
-                  style={inputStyle}
+                  className="crt-section__input"
                   value={cardForm.effectTiming || "turn"}
                   onChange={(e) =>
                     setCardForm({
@@ -292,10 +253,10 @@ export function CardCreatorSection({
                   <option value="conditional">Efeito de Condição</option>
                 </select>
               </div>
-              <div style={{ flex: 1 }}>
-                <label style={labelStyle}>Duração:</label>
+              <div className="crt-section__col">
+                <label className="crt-section__label">Duração:</label>
                 <select
-                  style={inputStyle}
+                  className="crt-section__input"
                   value={cardForm.effectDuration || "single"}
                   onChange={(e) =>
                     setCardForm({
@@ -311,25 +272,17 @@ export function CardCreatorSection({
             </div>
           )}
 
-          <label style={labelStyle}>URL da Imagem: *</label>
+          <label className="crt-section__label">URL da Imagem: *</label>
           <input
             type="text"
-            style={inputStyle}
+            className="crt-section__input"
             placeholder="https://exemplo.com/imagem.png"
             value={cardForm.imageUrl}
             onChange={(e) => setCardForm({ ...cardForm, imageUrl: e.target.value })}
           />
 
-          <div
-            style={{
-              background: "rgba(0,0,0,0.4)",
-              padding: "14px",
-              borderRadius: "8px",
-              margin: "14px 0",
-              border: "1px solid rgba(255,255,255,0.05)",
-            }}
-          >
-            <label style={labelStyle}>Zoom / Escala: ({cardForm.scale}x)</label>
+          <div className="crt-section__controls">
+            <label className="crt-section__label">Zoom / Escala: ({cardForm.scale}x)</label>
             <input
               type="range"
               min="0.2"
@@ -339,10 +292,10 @@ export function CardCreatorSection({
               onChange={(e) =>
                 setCardForm({ ...cardForm, scale: parseFloat(e.target.value) })
               }
-              style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+              className="crt-section__range"
             />
 
-            <label style={labelStyle}>Posição Horizontal (X): ({cardForm.posX}px)</label>
+            <label className="crt-section__label">Posição Horizontal (X): ({cardForm.posX}px)</label>
             <input
               type="range"
               min="-200"
@@ -351,10 +304,10 @@ export function CardCreatorSection({
               onChange={(e) =>
                 setCardForm({ ...cardForm, posX: parseInt(e.target.value) })
               }
-              style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+              className="crt-section__range"
             />
 
-            <label style={labelStyle}>Posição Vertical (Y): ({cardForm.posY}px)</label>
+            <label className="crt-section__label">Posição Vertical (Y): ({cardForm.posY}px)</label>
             <input
               type="range"
               min="-200"
@@ -363,25 +316,24 @@ export function CardCreatorSection({
               onChange={(e) =>
                 setCardForm({ ...cardForm, posY: parseInt(e.target.value) })
               }
-              style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+              className="crt-section__range"
             />
           </div>
 
-          <label style={labelStyle}>Descrição da Habilidade / Efeito: *</label>
+          <label className="crt-section__label">Descrição da Habilidade / Efeito: *</label>
           <textarea
-            style={{ ...inputStyle, height: "80px", resize: "vertical" }}
+            className="crt-section__input crt-section__textarea"
             value={cardForm.description}
             onChange={(e) => setCardForm({ ...cardForm, description: e.target.value })}
             placeholder="Escreva os efeitos ou a história da sua carta..."
           />
 
-          <button onClick={handleSave} style={primaryBtnStyle}>
+          <button onClick={handleSave} className="crt-section__save-btn">
             {cardForm.id ? "Atualizar Carta ✏️" : "Salvar na Biblioteca 💾"}
           </button>
         </div>
 
-        {/* Pré-visualização em Tempo Real */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div className="crt-section__preview">
           <h3 className="font-cinzel" style={{ color: "var(--text-muted)", marginBottom: "16px" }}>
             Pré-visualização em Tempo Real
           </h3>
@@ -406,34 +358,3 @@ export function CardCreatorSection({
     </div>
   );
 }
-
-const labelStyle = {
-  display: "block",
-  fontSize: "12px",
-  color: "var(--text-muted)",
-  marginTop: "10px",
-  marginBottom: "4px",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: "6px",
-  border: "1px solid rgba(255,255,255,0.2)",
-  background: "rgba(0,0,0,0.5)",
-  color: "#fff",
-  fontSize: "14px",
-};
-
-const primaryBtnStyle = {
-  background: "linear-gradient(135deg, var(--gold-primary), #d4af37)",
-  color: "#000",
-  border: "none",
-  padding: "12px 24px",
-  borderRadius: "8px",
-  fontWeight: "bold" as const,
-  fontSize: "15px",
-  cursor: "pointer",
-  width: "100%",
-  marginTop: "16px",
-};

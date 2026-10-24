@@ -1,3 +1,5 @@
+import "./ConfirmModal.css";
+
 interface ConfirmModalProps {
   title: string;
   message: string;
@@ -16,84 +18,16 @@ export function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.85)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-        backdropFilter: "blur(4px)",
-      }}
-    >
-      <div
-        style={{
-          background: "var(--panel-bg)",
-          border: "1px solid #e74c3c",
-          padding: "28px",
-          borderRadius: "12px",
-          maxWidth: "420px",
-          width: "90%",
-          boxShadow: "0 12px 40px rgba(231, 76, 60, 0.35)",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "42px", marginBottom: "12px" }}>🗑️</div>
-        <h3
-          className="font-cinzel"
-          style={{
-            color: "#e74c3c",
-            marginBottom: "12px",
-            fontSize: "20px",
-          }}
-        >
-          {title}
-        </h3>
-        <p
-          style={{
-            color: "#fff",
-            fontSize: "14px",
-            lineHeight: "1.6",
-            marginBottom: "24px",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {message}
-        </p>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <button
-            onClick={onCancel}
-            style={{
-              flex: 1,
-              background: "transparent",
-              color: "var(--text-main)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
-          >
+    <div className="cfm-modal-overlay">
+      <div className="cfm-modal-content">
+        <div className="cfm-modal__icon">🗑️</div>
+        <h3 className="font-cinzel cfm-modal__title">{title}</h3>
+        <p className="cfm-modal__text">{message}</p>
+        <div className="cfm-modal__actions">
+          <button onClick={onCancel} className="cfm-modal__btn-cancel">
             {cancelText}
           </button>
-          <button
-            onClick={onConfirm}
-            style={{
-              flex: 1,
-              background: "linear-gradient(135deg, #c70039, #900c3f)",
-              color: "#fff",
-              border: "none",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              fontSize: "14px",
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(199, 0, 57, 0.4)",
-            }}
-          >
+          <button onClick={onConfirm} className="cfm-modal__btn-confirm">
             {confirmText}
           </button>
         </div>

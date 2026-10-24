@@ -14,12 +14,12 @@ import { CardLibrarySection } from "./components/CardLibrarySection";
 import { AuthSection } from "./components/AuthSection";
 import { DescriptionModal } from "./components/DescriptionModal";
 
+import "./page.css";
+
 export default function Home() {
   const [activeTab, setActiveTabState] = useState<ActiveTab>("landing");
   const [modalDescription, setModalDescription] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
-  
-  // Guardamos o contexto de onde a edição iniciou
   const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,14 +48,11 @@ export default function Home() {
 
   const handleSaveCard = async (newCard: Card) => {
     await saveOrUpdateCard(newCard);
-    await reloadDecks(); // Atualiza os dados das cartas nos decks
+    await reloadDecks();
     setEditingCard(null);
-    
-    // Retorna para a biblioteca
     setActiveTab("library");
   };
 
-  // Inicia a edição vinda da Biblioteca Geral ou de um Deck específico
   const handleStartEdit = (card: Card, deckId?: string) => {
     setEditingCard(card);
     if (deckId) {
@@ -67,7 +64,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="pg-container">
       <Header
         activeTab={activeTab}
         setActiveTab={(tab) => {
@@ -81,15 +78,7 @@ export default function Home() {
         onLogout={logout}
       />
 
-      <main
-        style={{
-          flex: 1,
-          padding: "32px 16px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-          width: "100%",
-        }}
-      >
+      <main className="pg-main">
         {activeTab === "landing" && (
           <LandingSection onStartClick={() => setActiveTab("creator")} />
         )}
