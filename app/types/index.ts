@@ -46,3 +46,16 @@ export interface UserProfile {
   username?: string;
   avatarUrl?: string;
 }
+
+export type SortOption =
+  | "recent"           // Data de Adição (Mais recentes primeiro - Padrão)
+  | "oldest"           // Mais antigas primeiro
+  | "name_asc"         // A-Z
+  | "name_desc"        // Z-A
+  | "attack_desc"      // Maior Ataque (Efeitos no final por criação)
+  | "defense_desc"     // Maior Defesa (Efeitos no final por criação)
+  | "category"         // Categoria da Criatura (Normal > Evolução > Invocação, Efeitos no final)
+  | "behavior"         // Comportamento (Defesa > Ataque Rápido > Primeiro Toque > Paciente, Efeitos no final)
+  | "type"             // Tipo (Criatura primeiro > Efeito depois)
+  | "effect_timing"    // Momento de uso (Turno > Instantâneo > Condição, Criaturas no final)
+  | "effect_duration"; // Duração do efeito (Único > Contínuo, Criaturas no final)
