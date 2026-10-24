@@ -1,15 +1,27 @@
 import { Card, SortOption } from "../types";
 
 export function sortCards(cards: Card[], option: SortOption): Card[] {
+  // Criamos uma cópia do array para não alterar o estado original em memória
   const list = [...cards];
 
   switch (option) {
     case "recent":
-      // Reverte a ordem ou usa ID/posição padrão (os últimos criados ficam primeiro)
-      return list.reverse();
+      return list.sort((a, b) => {
+        // Se houver created_at do Supabase, ordena por data de criação decrescente
+        if (a.created_at && b.created_at) {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+        // Fallback: mantém os últimos criados primeiro sem reordenar por mutação
+        return 0;
+      });
 
     case "oldest":
-      return list;
+      return list.sort((a, b) => {
+        if (a.created_at && b.created_at) {
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        }
+        return 0;
+      });
 
     case "name_asc":
       return list.sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" }));
@@ -26,7 +38,7 @@ export function sortCards(cards: Card[], option: SortOption): Card[] {
         }
         if (isACreature) return -1;
         if (isBCreature) return 1;
-        return 0; // Mantém ordem original de criação para efeitos
+        return 0;
       });
 
     case "defense_desc":
@@ -38,7 +50,7 @@ export function sortCards(cards: Card[], option: SortOption): Card[] {
         }
         if (isACreature) return -1;
         if (isBCreature) return 1;
-        return 0; // Mantém ordem original de criação para efeitos
+        return 0;
       });
 
     case "category": {
@@ -53,7 +65,7 @@ export function sortCards(cards: Card[], option: SortOption): Card[] {
         }
         if (isACreature) return -1;
         if (isBCreature) return 1;
-        return 0; // Efeitos no final por criação
+        return 0;
       });
     }
 
@@ -69,7 +81,7 @@ export function sortCards(cards: Card[], option: SortOption): Card[] {
         }
         if (isACreature) return -1;
         if (isBCreature) return 1;
-        return 0; // Efeitos no final por criação
+        return 0;
       });
     }
 
@@ -91,7 +103,7 @@ export function sortCards(cards: Card[], option: SortOption): Card[] {
         }
         if (isAEffect) return -1;
         if (isBEffect) return 1;
-        return 0; // Criaturas no final por criação
+        return 0;
       });
     }
 
@@ -107,7 +119,7 @@ export function sortCards(cards: Card[], option: SortOption): Card[] {
         }
         if (isAEffect) return -1;
         if (isBEffect) return 1;
-        return 0; // Criaturas no final por criação
+        return 0;
       });
     }
 
