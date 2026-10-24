@@ -1,216 +1,439 @@
-import { useState } from "react";
-import { Card } from "../types";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CreatureSubtype,
+  CreatureBehavior,
+  EffectTiming,
+  EffectDuration,
+} from "../types";
 import { CardRender } from "./CardRender";
+import { NotificationModal } from "./NotificationModal";
+import { GameGlossary } from "./GameGlossary";
 
 interface CardCreatorSectionProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
+  editingCard: Card | null;
   onSaveCard: (card: Card) => Promise<void>;
   onShowModal: (desc: string) => void;
   onRequireAuth: () => void;
+  onCancelEdit?: () => void;
 }
+
+const initialFormState: Card = {
+  name: "",
+  type: "creature",
+  attack: 5,
+  defense: 5,
+  description: "",
+  imageUrl: "",
+  scale: 1.0,
+  posX: 0,
+  posY: 0,
+  creatureSubtype: "normal",
+  creatureBehavior: "defense",
+  effectTiming: "turn",
+  effectDuration: "single",
+};
 
 export function CardCreatorSection({
   user,
+  editingCard,
   onSaveCard,
   onShowModal,
   onRequireAuth,
+  onCancelEdit,
 }: CardCreatorSectionProps) {
-  const [cardForm, setCardForm] = useState<Card>({
-    name: "",
-    type: "combat",
-    attack: 5,
-    defense: 5,
-    description: "",
-    imageUrl: "",
-    scale: 1.0,
-    posX: 0,
-    posY: 0,
-  });
+  const [cardForm, setCardForm] = useState<Card>(editingCard || initialFormState);
+
+  // 1. Sincroniza APENAS quando a carta selecionada para edição mudar de ID ou de estado (edição vs criação)
+  useEffect(() => {
+    if (editingCard) {
+      setCardForm(editingCard);
+    } else {
+      setCardForm(initialFormState);
+    }
+  }, [editingCard?.id]); // 👈 Escuta especificamente a mudança de ID da carta
+
+  // Estado para controlar o modal customizado de alertas/mensagens
+  const [notification, setNotification] = useState<{
+    type: "success" | "error" | "info";
+    title: string;
+    message: string;
+    action?: () => void;
+  } | null>(null);
 
   const handleSave = async () => {
     if (!user) {
-      alert("Você precisa estar logado para salvar suas cartas no banco de dados!");
-      onRequireAuth();
+      setNotification({
+        type: "info",
+        title: "Acesso Necessário",
+        message:
+          "Você precisa estar logado para salvar suas cartas na biblioteca!",
+        action: onRequireAuth,
+      });
       return;
     }
+
+    // Validações de campos obrigatórios
+    if (!cardForm.name.trim()) {
+      setNotification({
+        type: "error",
+        title: "Campo Obrigatório",
+        message: "Por favor, digite um nome para a sua carta.",
+      });
+      return;
+    }
+
+    if (!cardForm.description.trim()) {
+      setNotification({
+        type: "error",
+        title: "Campo Obrigatório",
+        message:
+          "Sua carta precisa de uma descrição para explicar seus efeitos ou habilidades.",
+      });
+      return;
+    }
+
+    if (!cardForm.imageUrl.trim()) {
+      setNotification({
+        type: "error",
+        title: "Imagem Necessária",
+        message: "Forneça uma URL de imagem válida para ilustrar sua carta.",
+      });
+      return;
+    }
+
     try {
-      // Se for do tipo 'effect', limpamos os valores de ataque e defesa antes de salvar
       const payload: Card = {
         ...cardForm,
         attack: cardForm.type === "effect" ? 0 : cardForm.attack,
         defense: cardForm.type === "effect" ? 0 : cardForm.defense,
       };
 
+      // 2. Aguarda a gravação no Supabase e atualização de estado no pai
       await onSaveCard(payload);
-      alert("Carta salva no banco com sucesso!");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+      setNotification({
+        type: "success",
+        title: cardForm.id ? "Carta Atualizada!" : "Carta Forjada com Sucesso!",
+        message: `Sua carta "${cardForm.name}" foi gravada com segurança na sua biblioteca.`,
+      });
+
+      // 3. Reseta o formulário apenas se for criação de carta nova (se for edição, a navegação de aba cuidará disso)
+      if (!cardForm.id) {
+        setCardForm(initialFormState);
+      }
     } catch (err: any) {
-      alert("Erro ao salvar carta: " + err.message);
+      setNotification({
+        type: "error",
+        title: "Falha ao Salvar Carta",
+        message:
+          err.message ||
+          "Ocorreu um erro inesperado ao se comunicar com o banco de dados.",
+      });
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "32px",
-        flexWrap: "wrap",
-        justifyContent: "center",
-      }}
-    >
+    <div>
       <div
         style={{
-          flex: "1 1 380px",
-          background: "var(--panel-bg)",
-          padding: "24px",
-          borderRadius: "12px",
-          border: "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+          display: "flex",
+          gap: "32px",
+          flexWrap: "wrap",
+          justifyContent: "center",
         }}
       >
-        <h3
-          className="font-cinzel"
-          style={{
-            color: "var(--gold-primary)",
-            marginBottom: "16px",
-            fontSize: "18px",
-          }}
-        >
-          Personalizar Carta
-        </h3>
-
-        <label style={labelStyle}>Nome da Carta:</label>
-        <input
-          type="text"
-          style={inputStyle}
-          value={cardForm.name}
-          onChange={(e) => setCardForm({ ...cardForm, name: e.target.value })}
-          placeholder="Ex: Bola de Fogo Magica"
-        />
-
-        <label style={labelStyle}>Tipo:</label>
-        <select
-          style={inputStyle}
-          value={cardForm.type}
-          onChange={(e) =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setCardForm({ ...cardForm, type: e.target.value as any })
-          }
-        >
-          <option value="combat">Combate</option>
-          <option value="effect">Efeito</option>
-        </select>
-
-        {/* Inputs de Ataque e Defesa: Exibidos APENAS para cartas de COMBATE */}
-        {cardForm.type === "combat" && (
-          <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Ataque:</label>
-              <input
-                type="number"
-                style={inputStyle}
-                value={cardForm.attack}
-                onChange={(e) =>
-                  setCardForm({
-                    ...cardForm,
-                    attack: parseInt(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Defesa:</label>
-              <input
-                type="number"
-                style={inputStyle}
-                value={cardForm.defense}
-                onChange={(e) =>
-                  setCardForm({
-                    ...cardForm,
-                    defense: parseInt(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-          </div>
-        )}
-
-        <label style={labelStyle}>URL da Imagem:</label>
-        <input
-          type="text"
-          style={inputStyle}
-          placeholder="https://exemplo.com/imagem.png"
-          value={cardForm.imageUrl}
-          onChange={(e) => setCardForm({ ...cardForm, imageUrl: e.target.value })}
-        />
-
+        {/* Painel do Formulário */}
         <div
           style={{
-            background: "rgba(0,0,0,0.4)",
-            padding: "14px",
-            borderRadius: "8px",
-            margin: "14px 0",
-            border: "1px solid rgba(255,255,255,0.05)",
+            flex: "1 1 380px",
+            background: "var(--panel-bg)",
+            padding: "24px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
           }}
         >
-          <label style={labelStyle}>Zoom / Escala: ({cardForm.scale}x)</label>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            <h3
+              className="font-cinzel"
+              style={{ color: "var(--gold-primary)", fontSize: "18px" }}
+            >
+              {cardForm.id ? "Editar Carta" : "Personalizar Carta"}
+            </h3>
+            {cardForm.id && onCancelEdit && (
+              <button
+                onClick={() => {
+                  setCardForm(initialFormState);
+                  onCancelEdit();
+                }}
+                style={{
+                  background: "transparent",
+                  color: "var(--text-muted)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: "4px",
+                  padding: "4px 8px",
+                  fontSize: "11px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar Edição
+              </button>
+            )}
+          </div>
+
+          <label style={labelStyle}>Nome da Carta: *</label>
           <input
-            type="range"
-            min="0.5"
-            max="2.5"
-            step="0.1"
-            value={cardForm.scale}
-            onChange={(e) =>
-              setCardForm({ ...cardForm, scale: parseFloat(e.target.value) })
-            }
-            style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+            type="text"
+            style={inputStyle}
+            value={cardForm.name}
+            onChange={(e) => setCardForm({ ...cardForm, name: e.target.value })}
+            placeholder="Ex: Guardião de Ouro"
           />
 
-          <label style={labelStyle}>Posição Horizontal (X): ({cardForm.posX}px)</label>
-          <input
-            type="range"
-            min="-100"
-            max="100"
-            value={cardForm.posX}
+          <label style={labelStyle}>Tipo:</label>
+          <select
+            style={inputStyle}
+            value={cardForm.type}
             onChange={(e) =>
-              setCardForm({ ...cardForm, posX: parseInt(e.target.value) })
+              setCardForm({ ...cardForm, type: e.target.value as any })
             }
-            style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+          >
+            <option value="creature">Criatura</option>
+            <option value="effect">Efeito</option>
+          </select>
+
+          {cardForm.type === "creature" ? (
+            <>
+              <div style={{ display: "flex", gap: "12px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={labelStyle}>Categoria:</label>
+                  <select
+                    style={inputStyle}
+                    value={cardForm.creatureSubtype || "normal"}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        creatureSubtype: e.target.value as CreatureSubtype,
+                      })
+                    }
+                  >
+                    <option value="normal">Normal</option>
+                    <option value="evolution">Evolução</option>
+                    <option value="summon">Invocação</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={labelStyle}>Comportamento:</label>
+                  <select
+                    style={inputStyle}
+                    value={cardForm.creatureBehavior || "defense"}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        creatureBehavior: e.target.value as CreatureBehavior,
+                      })
+                    }
+                  >
+                    <option value="defense">Defesa</option>
+                    <option value="quick_attack">Ataque Rápido</option>
+                    <option value="first_strike">Primeiro Toque</option>
+                    <option value="patient">Paciente</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "12px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={labelStyle}>Ataque:</label>
+                  <input
+                    type="number"
+                    style={inputStyle}
+                    value={cardForm.attack}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        attack: parseInt(e.target.value) || 0,
+                      })
+                    }
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={labelStyle}>Defesa:</label>
+                  <input
+                    type="number"
+                    style={inputStyle}
+                    value={cardForm.defense}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        defense: parseInt(e.target.value) || 0,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Momento de Uso:</label>
+                <select
+                  style={inputStyle}
+                  value={cardForm.effectTiming || "turn"}
+                  onChange={(e) =>
+                    setCardForm({
+                      ...cardForm,
+                      effectTiming: e.target.value as EffectTiming,
+                    })
+                  }
+                >
+                  <option value="turn">Efeito de Turno</option>
+                  <option value="instant">Efeito Instantâneo</option>
+                  <option value="conditional">Efeito de Condição</option>
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Duração:</label>
+                <select
+                  style={inputStyle}
+                  value={cardForm.effectDuration || "single"}
+                  onChange={(e) =>
+                    setCardForm({
+                      ...cardForm,
+                      effectDuration: e.target.value as EffectDuration,
+                    })
+                  }
+                >
+                  <option value="single">Efeito Único</option>
+                  <option value="continuous">Efeito Contínuo</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          <label style={labelStyle}>URL da Imagem: *</label>
+          <input
+            type="text"
+            style={inputStyle}
+            placeholder="https://exemplo.com/imagem.png"
+            value={cardForm.imageUrl}
+            onChange={(e) =>
+              setCardForm({ ...cardForm, imageUrl: e.target.value })
+            }
           />
 
-          <label style={labelStyle}>Posição Vertical (Y): ({cardForm.posY}px)</label>
-          <input
-            type="range"
-            min="-100"
-            max="100"
-            value={cardForm.posY}
+          <div
+            style={{
+              background: "rgba(0,0,0,0.4)",
+              padding: "14px",
+              borderRadius: "8px",
+              margin: "14px 0",
+              border: "1px solid rgba(255,255,255,0.05)",
+            }}
+          >
+            <label style={labelStyle}>Zoom / Escala: ({cardForm.scale}x)</label>
+            <input
+              type="range"
+              min="0.2"
+              max="3.0"
+              step="0.05"
+              value={cardForm.scale}
+              onChange={(e) =>
+                setCardForm({ ...cardForm, scale: parseFloat(e.target.value) })
+              }
+              style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+            />
+
+            <label style={labelStyle}>
+              Posição Horizontal (X): ({cardForm.posX}px)
+            </label>
+            <input
+              type="range"
+              min="-200"
+              max="200"
+              value={cardForm.posX}
+              onChange={(e) =>
+                setCardForm({ ...cardForm, posX: parseInt(e.target.value) })
+              }
+              style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+            />
+
+            <label style={labelStyle}>
+              Posição Vertical (Y): ({cardForm.posY}px)
+            </label>
+            <input
+              type="range"
+              min="-200"
+              max="200"
+              value={cardForm.posY}
+              onChange={(e) =>
+                setCardForm({ ...cardForm, posY: parseInt(e.target.value) })
+              }
+              style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+            />
+          </div>
+
+          <label style={labelStyle}>Descrição da Habilidade / Efeito: *</label>
+          <textarea
+            style={{ ...inputStyle, height: "80px", resize: "vertical" }}
+            value={cardForm.description}
             onChange={(e) =>
-              setCardForm({ ...cardForm, posY: parseInt(e.target.value) })
+              setCardForm({ ...cardForm, description: e.target.value })
             }
-            style={{ width: "100%", accentColor: "var(--gold-primary)" }}
+            placeholder="Escreva os efeitos ou a história da sua carta..."
           />
+
+          <button onClick={handleSave} style={primaryBtnStyle}>
+            {cardForm.id ? "Atualizar Carta ✏️" : "Salvar na Biblioteca 💾"}
+          </button>
         </div>
 
-        <label style={labelStyle}>Descrição do Efeito ou Habilidade:</label>
-        <textarea
-          style={{ ...inputStyle, height: "80px", resize: "vertical" }}
-          value={cardForm.description}
-          onChange={(e) => setCardForm({ ...cardForm, description: e.target.value })}
-          placeholder="Escreva os efeitos ou a história da sua carta..."
+        {/* Pré-visualização em Tempo Real */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h3
+            className="font-cinzel"
+            style={{ color: "var(--text-muted)", marginBottom: "16px" }}
+          >
+            Pré-visualização em Tempo Real
+          </h3>
+          <CardRender card={cardForm} onShowMore={onShowModal} />
+        </div>
+      </div>
+
+      {/* Glossário didático no final da seção */}
+      <GameGlossary />
+
+      {/* Modal Customizado para Avisos e Notificações */}
+      {notification && (
+        <NotificationModal
+          type={notification.type}
+          title={notification.title}
+          message={notification.message}
+          onClose={() => {
+            const action = notification.action;
+            setNotification(null);
+            if (action) action();
+          }}
         />
-
-        <button onClick={handleSave} style={primaryBtnStyle}>
-          Salvar na Biblioteca 💾
-        </button>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <h3 className="font-cinzel" style={{ color: "var(--text-muted)", marginBottom: "16px" }}>
-          Pré-visualização em Tempo Real
-        </h3>
-        <CardRender card={cardForm} onShowMore={onShowModal} />
-      </div>
+      )}
     </div>
   );
 }

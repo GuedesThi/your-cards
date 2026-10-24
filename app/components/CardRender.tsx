@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useRef } from "react";
 import { Card } from "../types";
 
 interface CardRenderProps {
@@ -6,8 +8,70 @@ interface CardRenderProps {
 }
 
 export function CardRender({ card, onShowMore }: CardRenderProps) {
-  const isCombat = card.type === "combat";
-  const isLong = (card.description || "").length > (isCombat ? 85 : 140);
+  const isCreature = card.type === "creature" || (card.type as string) === "combat";
+
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (textRef.current) {
+        const hasOverflow =
+          textRef.current.scrollHeight > textRef.current.clientHeight;
+        setIsOverflowing(hasOverflow);
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [card.description, isCreature]);
+
+  const getSubtypeLabel = () => {
+    if (isCreature) {
+      switch (card.creatureSubtype) {
+        case "evolution":
+          return "Evolução";
+        case "summon":
+          return "Invocação";
+        default:
+          return "Normal";
+      }
+    } else {
+      switch (card.effectTiming) {
+        case "instant":
+          return "Instantâneo";
+        case "conditional":
+          return "Condição";
+        default:
+          return "Turno";
+      }
+    }
+  };
+
+  const getBehaviorLabel = () => {
+    if (isCreature) {
+      switch (card.creatureBehavior) {
+        case "defense":
+          return "🛡️ Defesa";
+        case "quick_attack":
+          return "⚡ Ataque Rápido";
+        case "first_strike":
+          return "🗡️ Primeiro Toque";
+        case "patient":
+          return "🧘 Paciente";
+        default:
+          return "Padrão";
+      }
+    } else {
+      switch (card.effectDuration) {
+        case "continuous":
+          return "🔄 Contínuo";
+        default:
+          return "💥 Único";
+      }
+    }
+  };
 
   return (
     <div
@@ -15,71 +79,57 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
         width: "280px",
         height: "420px",
         borderRadius: "16px",
-        padding: "12px",
+        padding: "10px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         position: "relative",
-        background: isCombat
-          ? "linear-gradient(135deg, #2c1212 0%, #1a0808 100%)"
-          : "linear-gradient(135deg, #0e1e2d 0%, #060e17 100%)",
-        border: `3px solid ${isCombat ? "#e74c3c" : "#2980b9"}`,
-        boxShadow: `0 8px 24px ${
-          isCombat ? "rgba(231, 76, 60, 0.35)" : "rgba(41, 128, 185, 0.35)"
-        }`,
+        overflow: "hidden",
+        border: "1px solid rgba(212, 175, 55, 0.35)",
+        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.6)",
         color: "#fff",
         userSelect: "none",
+        backgroundColor: "#0a0a0f",
       }}
     >
-      {/* Header */}
+      {/* 🔮 CAMADA DE AMBIENTAÇÃO */}
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "rgba(0,0,0,0.6)",
-          padding: "6px 12px",
-          borderRadius: "8px",
-          border: "1px solid rgba(255,255,255,0.1)",
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          overflow: "hidden",
         }}
       >
-        <span
-          className="font-cinzel"
-          style={{
-            fontWeight: "bold",
-            fontSize: "14px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: "160px",
-          }}
-        >
-          {card.name || "Nova Carta"}
-        </span>
-        <span
-          style={{
-            fontSize: "10px",
-            padding: "2px 8px",
-            borderRadius: "10px",
-            fontWeight: "bold",
-            textTransform: "uppercase",
-            background: isCombat ? "#e74c3c" : "#2980b9",
-          }}
-        >
-          {isCombat ? "Combate" : "Efeito"}
-        </span>
+        {card.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={card.imageUrl}
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "blur(16px) brightness(0.4)",
+              transform: "scale(1.2)",
+            }}
+          />
+        )}
       </div>
 
-      {/* Frame de Imagem */}
+      {/* 🖼️ QUADRO DA ARTE */}
       <div
         style={{
-          width: "100%",
-          height: "180px",
-          borderRadius: "8px",
+          position: "absolute",
+          inset: "8px",
+          borderRadius: "12px",
           overflow: "hidden",
-          position: "relative",
-          border: "2px solid rgba(212, 175, 55, 0.5)",
-          backgroundColor: "#000",
+          zIndex: 1,
+          border: "1px solid rgba(212, 175, 55, 0.4)",
+          boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {card.imageUrl ? (
@@ -90,110 +140,228 @@ export function CardRender({ card, onShowMore }: CardRenderProps) {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              objectFit: "contain",
               transform: `scale(${card.scale || 1}) translate(${card.posX || 0}px, ${card.posY || 0}px)`,
               transition: "transform 0.1s ease-out",
             }}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onError={(e: any) => {
               e.target.style.display = "none";
             }}
           />
         ) : (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              color: "#666",
-              fontSize: "12px",
-            }}
-          >
+          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: "12px" }}>
             Sem Imagem
           </div>
         )}
       </div>
 
-      {/* Descrição - Se for carta de efeito, ocupa o espaço que seria do ATK/DEF */}
+      {/* 🏷️ HEADER DA CARTA */}
       <div
         style={{
-          background: "rgba(0, 0, 0, 0.7)",
-          padding: "8px 10px",
-          borderRadius: "8px",
-          height: isCombat ? "80px" : "118px", // Expande se for efeito
-          fontSize: "11px",
-          lineHeight: "1.3",
-          overflow: "hidden",
           position: "relative",
-          border: "1px solid rgba(255,255,255,0.05)",
+          zIndex: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "rgba(10, 10, 15, 0.75)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          padding: "3px 8px",
+          borderRadius: "8px",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
         }}
       >
-        <p
+        <span
+          className="font-cinzel"
           style={{
-            display: "-webkit-box",
-            WebkitLineClamp: isCombat ? 4 : 6,
-            WebkitBoxOrient: "vertical",
+            fontWeight: "bold",
+            fontSize: "12px",
+            whiteSpace: "nowrap",
             overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "160px",
+            textShadow: "0 2px 4px rgba(0,0,0,0.8)",
           }}
         >
-          {card.description || "Sem descrição."}
-        </p>
-        {isLong && (
-          <button
-            onClick={() => onShowMore(card.description)}
-            style={{
-              position: "absolute",
-              bottom: "2px",
-              right: "6px",
-              background: "var(--gold-primary)",
-              color: "#000",
-              border: "none",
-              borderRadius: "4px",
-              fontSize: "9px",
-              fontWeight: "bold",
-              padding: "2px 6px",
-              cursor: "pointer",
-            }}
-          >
-            Mostrar tudo
-          </button>
-        )}
+          {card.name || "Nova Carta"}
+        </span>
+        <span
+          style={{
+            fontSize: "9px",
+            padding: "1px 6px",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            background: isCreature ? "#e74c3c" : "#2980b9",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
+          }}
+        >
+          {isCreature ? "Criatura" : "Efeito"}
+        </span>
       </div>
 
-      {/* Renderização Condicional: Só exibe Atributos se for carta de COMBATE */}
-      {isCombat && (
-        <div style={{ display: "flex", gap: "8px" }}>
+      {/* 📜 ÁREA INFERIOR */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", position: "relative" }}>
+          {/* BARRA DE CATEGORIA */}
           <div
             style={{
-              flex: 1,
-              background: "linear-gradient(to right, #900c3f, #c70039)",
-              padding: "6px",
-              borderRadius: "6px",
-              textAlign: "center",
+              position: "relative",
+              zIndex: 5,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "rgba(10, 10, 15, 0.85)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              padding: "4px 8px",
+              borderRadius: "8px",
+              border: "1px solid rgba(212, 175, 55, 0.4)",
+              fontSize: "10px",
               fontWeight: "bold",
-              fontSize: "12px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              minHeight: "22px",
+              boxSizing: "border-box",
             }}
           >
-            ⚔️ ATK: {card.attack || 0}
+            {/* Lado Esquerdo: Categoria e Comportamento */}
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ color: "var(--gold-glow)" }}>{getSubtypeLabel()}</span>
+              <span style={{ color: "rgba(255,255,255,0.4)" }}>•</span>
+              <span style={{ color: "#e0e0e0" }}>{getBehaviorLabel()}</span>
+            </div>
+
+            {/* Lado Direito: Insígnias Maioradas e Flutuantes */}
+            {isCreature && (
+              <div
+                style={{
+                  position: "absolute",
+                  right: "6px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  zIndex: 10,
+                }}
+              >
+                {/* Insígnia de Ataque */}
+                <div
+                  title="Ataque"
+                  style={{
+                    width: "26px", // 👈 Aumentado de 22px para 26px
+                    height: "26px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, #c70039, #900c3f)",
+                    border: "2px double var(--gold-primary)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "12px", // 👈 Fonte 12px
+                    fontWeight: "bold",
+                    color: "#fff",
+                    boxShadow: "0 3px 8px rgba(0, 0, 0, 0.9)",
+                    textShadow: "0 1px 2px #000",
+                    transform: "scale(1.1)",
+                  }}
+                >
+                  {card.attack || 0}
+                </div>
+
+                {/* Insígnia de Defesa */}
+                <div
+                  title="Defesa"
+                  style={{
+                    width: "26px", // 👈 Aumentado de 22px para 26px
+                    height: "26px",
+                    borderRadius: "30% 30% 50% 50%",
+                    background: "linear-gradient(135deg, #1f4068, #162447)",
+                    border: "1px solid rgba(255,255,255,0.4)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    color: "#fff",
+                    boxShadow: "0 3px 8px rgba(0, 0, 0, 0.9)",
+                    textShadow: "0 1px 2px #000",
+                    transform: "scale(1.1)",
+                  }}
+                >
+                  {card.defense || 0}
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* PAINEL DE DESCRIÇÃO */}
           <div
             style={{
-              flex: 1,
-              background: "linear-gradient(to right, #1f4068, #162447)",
-              padding: "6px",
-              borderRadius: "6px",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: "12px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+              position: "relative",
+              zIndex: 1,
+              width: "97%",
+              margin: "0 auto",
+              marginTop: "-1px",
+              background: "rgba(10, 10, 15, 0.80)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              padding: "12px 10px 8px 10px", // 👈 paddingTop: 12px para dar recuo ao texto em relação às bolinhas
+              borderRadius: "8px",
+              height: isCreature ? "85px" : "105px",
+              fontSize: "11px",
+              lineHeight: "1.3",
+              overflow: "hidden",
+              border: "1px solid rgba(212, 175, 55, 0.3)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
             }}
           >
-            🛡️ DEF: {card.defense || 0}
+            <p
+              ref={textRef}
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: isCreature ? 4 : 5,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                margin: 0,
+              }}
+            >
+              {card.description || "Sem descrição."}
+            </p>
+
+            {isOverflowing && (
+              <button
+                onClick={() => onShowMore(card.description)}
+                style={{
+                  position: "absolute",
+                  bottom: "4px",
+                  right: "6px",
+                  background: "var(--gold-primary)",
+                  color: "#000",
+                  border: "none",
+                  borderRadius: "4px",
+                  fontSize: "9px",
+                  fontWeight: "bold",
+                  padding: "2px 6px",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
+                }}
+              >
+                Mostrar tudo
+              </button>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
