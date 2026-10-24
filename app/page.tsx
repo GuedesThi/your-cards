@@ -19,11 +19,15 @@ import "./page.css";
 
 export default function Home() {
   const [activeTab, setActiveTabState] = useState<ActiveTab>("landing");
+  const [mounted, setMounted] = useState(false);
+
   const [modalDescription, setModalDescription] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
 
+  // Sincroniza a aba salva no localStorage APÓS a montagem no cliente para evitar erro de hidratação
   useEffect(() => {
+    setMounted(true);
     const savedTab = localStorage.getItem("activeTab") as ActiveTab | null;
     if (savedTab) {
       setActiveTabState(savedTab);
@@ -63,6 +67,11 @@ export default function Home() {
     }
     setActiveTab("creator");
   };
+
+  // Evita inconsistência de renderização até o componente ser montado no navegador
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="pg-container">
