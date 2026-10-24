@@ -47,13 +47,13 @@ export function GameGlossary() {
           </h4>
           <ul style={listStyle}>
             <li>
-              <strong>Normal:</strong> Entrada direta no campo sem custo de tributo ou requisito especial.
+              <strong>Normal:</strong> Basta estar em sua mão para poder entrar no campo.
             </li>
             <li>
-              <strong>Evolução:</strong> Precisa ser jogada por cima de uma criatura existente do mesmo tipo.
+              <strong>Evolução:</strong> Precisa que uma criatura sua de nível inferior esteja em campo.
             </li>
             <li>
-              <strong>Invocação:</strong> Requer rituais ou gatilhos especiais de jogo para ser invocada.
+              <strong>Invocação:</strong> Requer condições específicas ou cartas de efeito para ser invocada.
             </li>
           </ul>
 
@@ -62,16 +62,16 @@ export function GameGlossary() {
           </h4>
           <ul style={listStyle}>
             <li>
-              <strong>🛡️ Defesa:</strong> Foco em absorção de dano e proteção táctica de vida.
+              <strong>🛡️Defesa:</strong> Pode interceptar um ataque para levar todo o dano.
             </li>
             <li>
-              <strong>⚡ Ataque Rápido:</strong> Pode atacar imediatamente no mesmo turno em que entra em jogo.
+              <strong>⚡Ataque Rápido:</strong> Pode ser usada imediatamente no turno que entrar em campo.
             </li>
             <li>
-              <strong>🗡️ Primeiro Toque:</strong> Causa seu dano antes de receber o contra-ataque do alvo.
+              <strong>🗡️Primeiro Toque:</strong> Causa primeiro seu dano antes de receber um contra-ataque.
             </li>
             <li>
-              <strong>🧘 Paciente:</strong> Ganha atributos ou acumula poder a cada turno que permanece em campo.
+              <strong>🧘Paciente:</strong> Ganha atributos ou acumula poder a cada turno que permanece em campo.
             </li>
           </ul>
         </div>
@@ -90,13 +90,13 @@ export function GameGlossary() {
           </h4>
           <ul style={listStyle}>
             <li>
-              <strong>Turno:</strong> Ativado apenas durante a sua própria fase principal de jogada.
+              <strong>Turno:</strong> Só pode ser usada em seu turno.
             </li>
             <li>
-              <strong>Instantâneo:</strong> Pode ser usado como resposta no meio da jogada do oponente.
+              <strong>Instantâneo:</strong> Pode ser usada a qualquer momento, principalmente como resposta no meio da jogada de um oponente.
             </li>
             <li>
-              <strong>Condição:</strong> Dispara automaticamente quando um evento específico acontece na partida.
+              <strong>Condição:</strong> É executada automaticamente quando uma condição específica ocorrer.
             </li>
           </ul>
 
@@ -105,10 +105,10 @@ export function GameGlossary() {
           </h4>
           <ul style={listStyle}>
             <li>
-              <strong>💥 Único:</strong> Resolve sua habilidade e vai imediatamente para o descarte.
+              <strong>💥 Único:</strong> Ao ser executada é imediatamente descartada.
             </li>
             <li>
-              <strong>🔄 Contínuo:</strong> Permanece no campo modificando o jogo de forma permanente.
+              <strong>🔄 Contínuo:</strong> Permanece no campo até ser destruida pelo oponente.
             </li>
           </ul>
         </div>
