@@ -18,6 +18,9 @@ export default function Home() {
   const [activeTab, setActiveTabState] = useState<ActiveTab>("landing");
   const [modalDescription, setModalDescription] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
+  
+  // Guardamos o contexto de onde a edição iniciou
+  const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
 
   useEffect(() => {
     const savedTab = localStorage.getItem("activeTab") as ActiveTab | null;
@@ -44,14 +47,22 @@ export default function Home() {
   } = useDecks(user?.id);
 
   const handleSaveCard = async (newCard: Card) => {
-    await saveOrUpdateCard(newCard); // Atualiza o estado em memória imediatamente com a resposta do Supabase
-    await reloadDecks(); // Sincroniza apenas as cartas dentro dos decks
+    await saveOrUpdateCard(newCard);
+    await reloadDecks(); // Atualiza os dados das cartas nos decks
     setEditingCard(null);
+    
+    // Retorna para a biblioteca
     setActiveTab("library");
   };
 
-  const handleStartEdit = (card: Card) => {
+  // Inicia a edição vinda da Biblioteca Geral ou de um Deck específico
+  const handleStartEdit = (card: Card, deckId?: string) => {
     setEditingCard(card);
+    if (deckId) {
+      setActiveDeckId(deckId);
+    } else {
+      setActiveDeckId(null);
+    }
     setActiveTab("creator");
   };
 
@@ -60,7 +71,10 @@ export default function Home() {
       <Header
         activeTab={activeTab}
         setActiveTab={(tab) => {
-          if (tab !== "creator") setEditingCard(null);
+          if (tab !== "creator") {
+            setEditingCard(null);
+            setActiveDeckId(null);
+          }
           setActiveTab(tab);
         }}
         user={user}
@@ -96,6 +110,7 @@ export default function Home() {
             user={user}
             cards={cards}
             decks={decks}
+            initialDeckId={activeDeckId}
             onShowModal={setModalDescription}
             onEditCard={handleStartEdit}
             onDeleteCard={removeCard}

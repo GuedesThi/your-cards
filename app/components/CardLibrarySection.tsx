@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, Deck } from "../types";
 import { CardRender } from "./CardRender";
 import { ConfirmModal } from "./ConfirmModal";
@@ -9,8 +11,9 @@ interface CardLibrarySectionProps {
   user: any;
   cards: Card[];
   decks: Deck[];
+  initialDeckId?: string | null;
   onShowModal: (desc: string) => void;
-  onEditCard: (card: Card) => void;
+  onEditCard: (card: Card, deckId?: string) => void; // 👈 Suporta o deckId opcional
   onDeleteCard: (cardId: string) => void;
   onCreateDeck: (name: string, description: string, imageUrl?: string) => Promise<void>;
   onUpdateDeck: (deckId: string, name: string, description: string, imageUrl?: string) => Promise<void>;
@@ -23,6 +26,7 @@ export function CardLibrarySection({
   user,
   cards,
   decks,
+  initialDeckId,
   onShowModal,
   onEditCard,
   onDeleteCard,
@@ -32,12 +36,34 @@ export function CardLibrarySection({
   onRemoveCardFromDeck,
   onDeleteDeck,
 }: CardLibrarySectionProps) {
-  const [subTab, setSubTab] = useState<"cards" | "decks">("cards");
+  // Se veio um deckId inicial da edição, abre a sub-aba 'decks' por padrão
+  const [subTab, setSubTab] = useState<"cards" | "decks">(initialDeckId ? "decks" : "cards");
+  const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
+
+  // Seleciona e sincroniza o deck que estava aberto antes da edição
+  useEffect(() => {
+    if (initialDeckId && decks.length > 0) {
+      const targetDeck = decks.find((d) => d.id === initialDeckId);
+      if (targetDeck) {
+        setSelectedDeck(targetDeck);
+        setSubTab("decks");
+      }
+    }
+  }, [initialDeckId, decks]);
+
+  // Sincroniza o selectedDeck se as cartas dele mudarem
+  useEffect(() => {
+    if (selectedDeck) {
+      const updatedDeck = decks.find((d) => d.id === selectedDeck.id);
+      if (updatedDeck) {
+        setSelectedDeck(updatedDeck);
+      }
+    }
+  }, [decks]);
+
   const [deletingCard, setDeletingCard] = useState<Card | null>(null);
   const [deletingDeckId, setDeletingDeckId] = useState<string | null>(null);
 
-  // Estados de criação/edição de Decks
-  const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
   const [deckName, setDeckName] = useState("");
   const [deckDesc, setDeckDesc] = useState("");
@@ -273,7 +299,7 @@ export function CardLibrarySection({
             <h4 style={{ color: "#fff", marginBottom: "12px" }}>Cartas no Deck ({selectedDeck.cards?.length || 0})</h4>
             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", marginBottom: "32px" }}>
               {(selectedDeck.cards || []).map(({ card, quantity }) => (
-                <div key={card.id} style={{ position: "relative" }}>
+                <div key={card.id} style={{ display: "flex", flexDirection: "column", gap: "8px", position: "relative" }}>
                   <CardRender card={card} onShowMore={onShowModal} />
                   <div
                     style={{
@@ -290,31 +316,52 @@ export function CardLibrarySection({
                       alignItems: "center",
                       justifyContent: "center",
                       boxShadow: "0 2px 8px #000",
+                      zIndex: 10,
                     }}
                   >
                     x{quantity}
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (card.id && selectedDeck.id) {
-                        await onRemoveCardFromDeck(selectedDeck.id, card.id);
-                      }
-                    }}
-                    style={{
-                      width: "100%",
-                      marginTop: "8px",
-                      background: "rgba(231, 76, 60, 0.2)",
-                      border: "1px solid #e74c3c",
-                      color: "#ff8a80",
-                      padding: "6px",
-                      borderRadius: "6px",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Remover do Deck
-                  </button>
+                  {user && (
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      {/* Envia o ID do deck para salvar o contexto de edição */}
+                      <button
+                        onClick={() => onEditCard(card, selectedDeck.id)}
+                        style={{
+                          flex: 1,
+                          background: "rgba(243, 156, 18, 0.2)",
+                          border: "1px solid var(--gold-primary)",
+                          color: "var(--gold-glow)",
+                          padding: "6px",
+                          borderRadius: "6px",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ✏️ Editar
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (card.id && selectedDeck.id) {
+                            await onRemoveCardFromDeck(selectedDeck.id, card.id);
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          background: "rgba(231, 76, 60, 0.2)",
+                          border: "1px solid #e74c3c",
+                          color: "#ff8a80",
+                          padding: "6px",
+                          borderRadius: "6px",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -324,31 +371,50 @@ export function CardLibrarySection({
               {cards.map((card) => (
                 <div key={card.id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <CardRender card={card} onShowMore={onShowModal} />
-                  <button
-                    onClick={async () => {
-                      if (card.id && selectedDeck.id) {
-                        await onAddCardToDeck(selectedDeck.id, card.id, 1);
-                      }
-                    }}
-                    style={{
-                      background: "linear-gradient(135deg, var(--gold-primary), #d4af37)",
-                      color: "#000",
-                      border: "none",
-                      padding: "8px",
-                      borderRadius: "6px",
-                      fontWeight: "bold",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    ➕ Adicionar ao Deck
-                  </button>
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    <button
+                      onClick={() => onEditCard(card, selectedDeck.id)}
+                      style={{
+                        background: "rgba(243, 156, 18, 0.2)",
+                        border: "1px solid var(--gold-primary)",
+                        color: "var(--gold-glow)",
+                        padding: "8px",
+                        borderRadius: "6px",
+                        fontWeight: "bold",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                      title="Editar Carta"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (card.id && selectedDeck.id) {
+                          await onAddCardToDeck(selectedDeck.id, card.id, 1);
+                        }
+                      }}
+                      style={{
+                        flex: 1,
+                        background: "linear-gradient(135deg, var(--gold-primary), #d4af37)",
+                        color: "#000",
+                        border: "none",
+                        padding: "8px",
+                        borderRadius: "6px",
+                        fontWeight: "bold",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ➕ Adicionar ao Deck
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          /* Lista de Cards de Decks */
+          /* Lista de Decks */
           decks.length === 0 ? (
             <p style={{ color: "var(--text-muted)" }}>
               Você ainda não criou nenhum deck. Clique em &quot;Criar Novo Deck&quot; acima para começar!
