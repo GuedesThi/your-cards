@@ -8,6 +8,11 @@ export const authService = {
     return data.session;
   },
 
+  async getUser() {
+    const { data } = await supabase.auth.getUser();
+    return { user: data.user };
+  },
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAuthStateChange(callback: (session: any) => void) {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -32,5 +37,30 @@ export const authService = {
 
   async signOut() {
     return await supabase.auth.signOut();
+  },
+
+  async updateProfile(username: string, avatarUrl: string) {
+    const { data, error } = await supabase.auth.updateUser({
+      data: { username, avatar_url: avatarUrl },
+    });
+    return { data, error };
+  },
+
+  async updateEmail(newEmail: string) {
+    const { data, error } = await supabase.auth.updateUser({ email: newEmail });
+    return { data, error };
+  },
+
+  async updatePassword(newPassword: string) {
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+    return { data, error };
+  },
+
+  async deleteAccount() {
+    const { data, error } = await supabase.rpc("delete_user_account");
+    if (error) {
+      await supabase.auth.signOut();
+    }
+    return { data, error };
   },
 };

@@ -12,6 +12,7 @@ import { LandingSection } from "./components/LandingSection";
 import { CardCreatorSection } from "./components/CardCreatorSection";
 import { CardLibrarySection } from "./components/CardLibrarySection";
 import { AuthSection } from "./components/AuthSection";
+import { ProfileSection } from "./components/ProfileSection";
 import { DescriptionModal } from "./components/DescriptionModal";
 
 import "./page.css";
@@ -34,7 +35,7 @@ export default function Home() {
     localStorage.setItem("activeTab", tab);
   };
 
-  const { user, logout } = useAuth();
+  const { user, logout, reloadUser } = useAuth();
   const { cards, saveOrUpdateCard, removeCard } = useCards(user?.id);
   const {
     decks,
@@ -113,6 +114,14 @@ export default function Home() {
 
         {activeTab === "auth" && (
           <AuthSection onSuccessLogin={() => setActiveTab("library")} />
+        )}
+
+        {activeTab === "profile" && user && (
+          <ProfileSection
+            user={user}
+            onReloadUser={reloadUser}
+            onLogout={logout}
+          />
         )}
       </main>
 

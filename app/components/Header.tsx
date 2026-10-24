@@ -1,15 +1,16 @@
-import { ActiveTab } from "../types";
+import { ActiveTab, UserProfile } from "../types";
 import "./Header.css";
 
 interface HeaderProps {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any;
+  user: UserProfile | null;
   onLogout: () => void;
 }
 
 export function Header({ activeTab, setActiveTab, user, onLogout }: HeaderProps) {
+  const displayName = user?.username || user?.email || "Minha Conta";
+
   return (
     <header className="hdr-container">
       <h1
@@ -39,9 +40,25 @@ export function Header({ activeTab, setActiveTab, user, onLogout }: HeaderProps)
         </button>
         {user ? (
           <div className="hdr-container__user">
-            <span className="hdr-container__email" title={user.email}>
-              👤 {user.email}
-            </span>
+            <button
+              className={`hdr-container__btn ${activeTab === "profile" ? "hdr-container__btn--active" : ""}`}
+              onClick={() => setActiveTab("profile")}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              {user.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatarUrl}
+                  alt=""
+                  style={{ width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover" }}
+                />
+              ) : (
+                <span>👤</span>
+              )}
+              <span className="hdr-container__email" title={displayName}>
+                {displayName}
+              </span>
+            </button>
             <button
               className="hdr-container__btn hdr-container__btn--logout"
               onClick={onLogout}

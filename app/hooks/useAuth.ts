@@ -1,23 +1,49 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { authService } from "../services/authService";
+import { UserProfile } from "../types";
 
 export function useAuth() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserProfile = async () => {
+    const { user: supabaseUser } = await authService.getUser();
+    if (supabaseUser) {
+      setUser({
+        id: supabaseUser.id,
+        email: supabaseUser.email,
+        username: supabaseUser.user_metadata?.username || "",
+        avatarUrl: supabaseUser.user_metadata?.avatar_url || "",
+      });
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    authService.getSession().then((session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    fetchUserProfile();
 
+    // Inscreve no ouvinte para atualizar o estado caso o usuário entre/saia
     const subscription = authService.onAuthStateChange((session) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          username: session.user.user_metadata?.username || "",
+          avatarUrl: session.user.user_metadata?.avatar_url || "",
+        });
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const logout = async () => {
@@ -25,5 +51,5 @@ export function useAuth() {
     setUser(null);
   };
 
-  return { user, loading, logout };
+  return { user, loading, logout, reloadUser: fetchUserProfile };
 }

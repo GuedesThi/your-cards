@@ -28,7 +28,7 @@ export interface Card {
 }
 
 export type AuthMode = "login" | "register" | "forgot";
-export type ActiveTab = "landing" | "creator" | "library" | "auth";
+export type ActiveTab = "landing" | "creator" | "library" | "auth" | "profile";
 
 export interface Deck {
   id?: string;
@@ -38,4 +38,11 @@ export interface Deck {
   imageUrl?: string; // 👈 URL da capa do deck
   cards?: { card: Card; quantity: number }[];
   created_at?: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email?: string;
+  username?: string;
+  avatarUrl?: string;
 }
