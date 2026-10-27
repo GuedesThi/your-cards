@@ -10,7 +10,7 @@ interface CardsGridProps {
   cards: Card[];
   onShowModal: (desc: string) => void;
   onEditCard: (card: Card) => void;
-  onDeleteCard: (card: Card) => void;
+  onDeleteCard: (card: Card) => Promise<void> | void;
 }
 
 export function CardsGrid({ user, cards, onShowModal, onEditCard, onDeleteCard }: CardsGridProps) {

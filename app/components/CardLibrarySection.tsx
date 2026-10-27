@@ -17,7 +17,7 @@ interface CardLibrarySectionProps {
   initialDeckId?: string | null;
   onShowModal: (desc: string) => void;
   onEditCard: (card: Card, deckId?: string) => void;
-  onDeleteCard: (cardId: string) => void;
+  onDeleteCard: (card: Card) => Promise<void>;
   onCreateDeck: (name: string, description: string, imageUrl?: string) => Promise<void>;
   onUpdateDeck: (deckId: string, name: string, description: string, imageUrl?: string) => Promise<void>;
   onAddCardToDeck: (deckId: string, cardId: string, qty: number) => Promise<void>;
@@ -221,7 +221,7 @@ export function CardLibrarySection({
           confirmText="Sim, Excluir"
           cancelText="Cancelar"
           onConfirm={() => {
-            if (deletingCard.id) onDeleteCard(deletingCard.id);
+            onDeleteCard(deletingCard);
             setDeletingCard(null);
           }}
           onCancel={() => setDeletingCard(null)}
